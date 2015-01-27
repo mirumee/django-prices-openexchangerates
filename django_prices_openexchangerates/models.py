@@ -1,13 +1,15 @@
 from decimal import Decimal, ROUND_HALF_UP
 from threading import local
+
 from django_prices.models import PriceField
 from django.core.exceptions import ValidationError
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
+
 from .currencies import CURRENCIES
+
 
 CENTS = Decimal('0.01')
 

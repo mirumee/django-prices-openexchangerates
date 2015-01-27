@@ -6,6 +6,7 @@ from decimal import Decimal
 import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
 from .models import ConversionRate
 
 BASE_URL = r'http://openexchangerates.org/api'

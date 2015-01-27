@@ -1,8 +1,10 @@
-from prices import Price
 import logging
 
+from prices import Price
 from django.conf import settings
+
 from .models import ConversionRate
+
 
 logger = logging.getLogger('django_prices_openexchangerates')
 

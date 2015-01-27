@@ -1,10 +1,13 @@
 from decimal import Decimal
+
 import mock
 from django.conf import settings
 from django.db import models
 from django.test import TestCase
 from prices import Price
+
 from .models import MultiCurrencyPriceField, MultiCurrencyPrice
+
 
 RATES = {
     'USD': Decimal(1),
