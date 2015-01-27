@@ -112,25 +112,16 @@ class MultiCurrencyPrice(object):
         return not self.price == other
 
     def __mul__(self, other):
-        new_price = self.price.__mul__(other)
-        self.price = new_price
-        self.recalculate_currencies()
-        return self
+        return MultiCurrencyPrice(self.price.__mul__(other))
 
     def __rmul__(self, other):
-        return self.price.__rmul(other)
+        return MultiCurrencyPrice(self.price.__rmul__(other))
 
     def __add__(self, other):
-        new_price = self.price.__add__(other)
-        self.price = new_price
-        self.recalculate_currencies()
-        return self
+        return MultiCurrencyPrice(self.price.__add__(other.price))
 
     def __sub__(self, other):
-        new_price = self.price.__sub__(other)
-        self.price = new_price
-        self.recalculate_currencies()
-        return self
+        return MultiCurrencyPrice(self.price.__sub__(other.price))
 
     def for_current_currency(self):
         if self.price.currency == self.currency:
@@ -146,6 +137,10 @@ class MultiCurrencyPrice(object):
                         self.price, currency)
                 except ValueError:
                     pass
+
+    @property
+    def in_base_currency(self):
+        return self.price
 
 
 class MultiCurrencyPriceField(PriceField):
