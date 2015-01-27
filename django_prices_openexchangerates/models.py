@@ -7,7 +7,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
-from prices import Price
 from .currencies import CURRENCIES
 
 CENTS = Decimal('0.01')
@@ -129,14 +128,10 @@ class MultiCurrencyPrice(object):
         return self.currencies.get(self.currency) or self.price
 
     def recalculate_currencies(self):
+        from .utils import convert_price
         for currency in settings.AVAILABLE_PURCHASE_CURRENCIES:
-            from .utils import convert_price
             if currency in CURRENCIES:
-                try:
-                    self.currencies[currency] = convert_price(
-                        self.price, currency)
-                except ValueError:
-                    pass
+                self.currencies[currency] = convert_price(self.price, currency)
 
     @property
     def in_base_currency(self):
