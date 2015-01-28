@@ -47,7 +47,7 @@ class MultiCurrencyPriceFieldTest(TestCase):
         base_price = Price(7, currency='USD')
         result = field.to_python(7)
         self.assertTrue(isinstance(result, MultiCurrencyPrice))
-        self.assertEqual(result.price, base_price)
+        self.assertEqual(result.base_price, base_price)
 
     def test_currency_conversion(self, mock_item):
         field = MultiCurrencyPriceField(currency='USD')
@@ -58,7 +58,7 @@ class MultiCurrencyPriceFieldTest(TestCase):
         eur_val = RATES['EUR'] * net_val
         self.assertEqual(set(result.currencies.keys()),
                          set(settings.AVAILABLE_PURCHASE_CURRENCIES))
-        self.assertEqual(result.price, base_price)
+        self.assertEqual(result.base_price, base_price)
         self.assertEqual(result.currencies['GBP'],
                          Price(currency='GBP', net=gbp_val))
         self.assertEqual(result.currencies['EUR'],
@@ -80,7 +80,7 @@ class MultiCurrencyPriceTest(TestCase):
         expected_eur = expected_usd * RATES['EUR']
         expected_gbp = expected_usd * RATES['GBP']
         prices_sum = self.price1 + self.price2
-        self.assertEqual(prices_sum.in_base_currency.gross, expected_usd)
+        self.assertEqual(prices_sum.base_price.gross, expected_usd)
         self.assertEqual(prices_sum.currencies['EUR'].gross, expected_eur)
         self.assertEqual(prices_sum.currencies['GBP'].gross, expected_gbp)
 
@@ -89,7 +89,7 @@ class MultiCurrencyPriceTest(TestCase):
         expected_eur = expected_usd * RATES['EUR']
         expected_gbp = expected_usd * RATES['GBP']
         prices_sum = self.price2 - self.price1
-        self.assertEqual(prices_sum.in_base_currency.gross, expected_usd)
+        self.assertEqual(prices_sum.base_price.gross, expected_usd)
         self.assertEqual(prices_sum.currencies['EUR'].gross, expected_eur)
         self.assertEqual(prices_sum.currencies['GBP'].gross, expected_gbp)
 
@@ -98,7 +98,7 @@ class MultiCurrencyPriceTest(TestCase):
         expected_eur = expected_usd * RATES['EUR']
         expected_gbp = expected_usd * RATES['GBP']
         prices_sum = self.price2 * 5
-        self.assertEqual(prices_sum.in_base_currency.gross, expected_usd)
+        self.assertEqual(prices_sum.base_price.gross, expected_usd)
         self.assertEqual(prices_sum.currencies['EUR'].gross, expected_eur)
         self.assertEqual(prices_sum.currencies['GBP'].gross, expected_gbp)
 
@@ -107,6 +107,6 @@ class MultiCurrencyPriceTest(TestCase):
         expected_eur = expected_usd * RATES['EUR']
         expected_gbp = expected_usd * RATES['GBP']
         prices_sum = Decimal('0.1') * self.price2
-        self.assertEqual(prices_sum.in_base_currency.gross, expected_usd)
+        self.assertEqual(prices_sum.base_price.gross, expected_usd)
         self.assertEqual(prices_sum.currencies['EUR'].gross, expected_eur)
         self.assertEqual(prices_sum.currencies['GBP'].gross, expected_gbp)

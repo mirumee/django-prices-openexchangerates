@@ -1,3 +1,5 @@
+from __future__ import  unicode_literals
+
 from decimal import Decimal, ROUND_HALF_UP
 from threading import local
 
@@ -74,7 +76,7 @@ class ConversionRate(models.Model):
         super(ConversionRate, self).clean()
 
     def __str__(self):
-        return '1 {} = {:.4f} {}'.format(
+        return '1 %s = %.04f %s' % (
             self.base_currency, self.rate, self.to_currency)
 
 
@@ -82,62 +84,43 @@ class MultiCurrencyPrice(object):
 
     currencies = {}
 
-    def __init__(self, price, currency=None):
-        self.price = price
-        self.currency = currency or settings.DEFAULT_CURRENCY
+    def __init__(self, price):
+        self.base_price = price
         self.recalculate_currencies()
 
     def __repr__(self):
-        base_price = self.price
-        if base_price.net == base_price.gross:
-            return 'MultiCurrencyPrice(%r, base_currency=%r, ' \
-                   'available_currencies=%r)' % (
-                       str(base_price.net), base_price.currency,
-                       str(self.currencies.keys()))
-        return ('MultiCurrencyPrice(net=%r, gross=%r, base_currency=%r, '
-                'available_currencies=%r)' % (
-                    str(base_price.net), str(base_price.gross),
-                    base_price.currency,
-                    str(self.currencies.keys())))
+        return 'MultiCurrencyPrice(%r)' % (self.base_price, )
 
     def __lt__(self, other):
-        return self.price < other
+        return self.base_price < other
 
     def __le__(self, other):
-        return self.price < other or self.price == other
+        return self.base_price < other or self.base_price == other
 
     def __eq__(self, other):
-        return self.price == other
+        return self.base_price == other
 
     def __ne__(self, other):
-        return not self.price == other
+        return not self.base_price == other
 
     def __mul__(self, other):
-        return MultiCurrencyPrice(self.price.__mul__(other))
+        return MultiCurrencyPrice(self.base_price.__mul__(other))
 
     def __rmul__(self, other):
-        return MultiCurrencyPrice(self.price.__rmul__(other))
+        return MultiCurrencyPrice(self.base_price.__rmul__(other))
 
     def __add__(self, other):
-        return MultiCurrencyPrice(self.price.__add__(other.price))
+        return MultiCurrencyPrice(self.base_price.__add__(other.base_price))
 
     def __sub__(self, other):
-        return MultiCurrencyPrice(self.price.__sub__(other.price))
-
-    def for_current_currency(self):
-        if self.price.currency == self.currency:
-            return self.price
-        return self.currencies.get(self.currency) or self.price
+        return MultiCurrencyPrice(self.base_price.__sub__(other.base_price))
 
     def recalculate_currencies(self):
         from .utils import convert_price
         for currency in settings.AVAILABLE_PURCHASE_CURRENCIES:
             if currency in CURRENCIES:
-                self.currencies[currency] = convert_price(self.price, currency)
-
-    @property
-    def in_base_currency(self):
-        return self.price
+                self.currencies[currency] = convert_price(self.base_price,
+                                                          currency)
 
 
 class MultiCurrencyPriceField(PriceField):
