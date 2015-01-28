@@ -1,4 +1,4 @@
-from __future__ import  unicode_literals
+from __future__ import unicode_literals
 
 from decimal import Decimal, ROUND_HALF_UP
 from threading import local
