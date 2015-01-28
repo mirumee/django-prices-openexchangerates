@@ -171,6 +171,5 @@ CURRENCIES = {
     'XPF': _('CFP Franc'),
     'YER': _('Yemeni Rial'),
     'ZAR': _('South African Rand'),
-    'ZMK': _('Zambian Kwacha (pre-2013)'),
     'ZMW': _('Zambian Kwacha'),
     'ZWL': _('Zimbabwean Dollar')}
