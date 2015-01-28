@@ -31,9 +31,5 @@ setup(name='django-prices-openexchangerates',
       classifiers=CLASSIFIERS,
       install_requires=['django', 'django-prices>=0.3.4'],
       platforms=['any'],
-      tests_require=[
-          'mock==1.0.1',
-      ],
-      test_suite='django_prices_openexchangerates.tests',
       zip_safe=False)
 
