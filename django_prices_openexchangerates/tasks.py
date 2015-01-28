@@ -42,5 +42,5 @@ def update_conversion_rates():
     for conversion_rate in conversion_rates:
         new_exchange_rate = exchange_rates[conversion_rate.to_currency]
         conversion_rate.rate = new_exchange_rate
-        conversion_rate.save()
+        conversion_rate.save(update_fields=['rate'])
     return conversion_rates

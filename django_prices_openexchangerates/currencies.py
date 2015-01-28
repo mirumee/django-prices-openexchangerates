@@ -1,4 +1,5 @@
-# -*- encoding: utf-8 -*-
+from __future__ import unicode_literals
+
 '''
 List of standard currencies available as ISO 4217. This list was generated
 at 14th Feb 2014 based on the ISO standard at the time. Not guarantee on

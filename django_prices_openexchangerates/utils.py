@@ -9,7 +9,7 @@ from .models import ConversionRate
 logger = logging.getLogger('django_prices_openexchangerates')
 
 
-def convert_price(price, to_currency=settings.DEFAULT_CURRENCY):
+def exchange_currency(price, to_currency=settings.DEFAULT_CURRENCY):
     if price.currency == to_currency:
         return price
 
