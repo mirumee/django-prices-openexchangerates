@@ -77,3 +77,8 @@ class ConversionRate(models.Model):
     def __str__(self):
         return '1 %s = %.04f %s' % (
             self.base_currency, self.rate, self.to_currency)
+
+    def __repr__(self):
+        return 'ConversionRate(pk=%d, base_currency=%s, to_currency=%s,' \
+               ' rate=%.04f)' % (
+            self.pk, self.base_currency, self.to_currency, self.rate)
