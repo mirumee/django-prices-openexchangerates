@@ -19,7 +19,7 @@ def _convert_price(price, to_currency):
         rate_currency = to_currency
     try:
         rate = ConversionRate.objects.get_rate(rate_currency)
-    except ConversionRate.DoesNotExist:
+    except ConversionRate.DoesNotExist:  # noqa
         raise ValueError('No conversion rate for %s' % (price.currency, ))
     if reverse_rate:
         conversion_rate = 1 / rate.rate
