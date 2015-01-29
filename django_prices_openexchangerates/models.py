@@ -70,6 +70,6 @@ class ConversionRate(models.Model):
                                     self.to_currency)
 
     def __repr__(self):
-        return 'ConversionRate(pk=%d, base_currency=%s, to_currency=%s,' \
-               ' rate=%.04f)' % (self.pk, self.base_currency, self.to_currency,
-                                 self.rate)
+        return (
+            'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)' % (
+                self.pk, self.base_currency, self.to_currency, self.rate))

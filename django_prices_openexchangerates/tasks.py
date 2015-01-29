@@ -9,8 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from .models import ConversionRate
 
-BASE_URL = r'http://openexchangerates.org/api'
-ENDPOINT_LATEST = BASE_URL + r'/latest.json'
+ENDPOINT_LATEST = 'http://openexchangerates.org/api/latest.json'
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
 
 try:
