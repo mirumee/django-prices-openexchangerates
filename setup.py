@@ -29,7 +29,7 @@ setup(name='django-prices-openexchangerates',
       packages=['django_prices_openexchangerates'],
       include_package_data=True,
       classifiers=CLASSIFIERS,
-      install_requires=['django', 'django-prices>=0.3.4'],
+      install_requires=['django-prices>=0.3.4', 'prices>=0.5.2'],
       platforms=['any'],
       tests_require=[
           'mock==1.0.1',
