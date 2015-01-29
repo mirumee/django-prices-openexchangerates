@@ -1,5 +1,7 @@
+from __future__ import unicode_literals
+
 import operator
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 from prices import History, Price, PriceModifier
 
 CENTS = Decimal('0.01')
@@ -22,10 +24,7 @@ class CurrencyConversion(PriceModifier):
                                  self.rate)
 
     def apply(self, price_obj):
-        history = History(price_obj, operator.__mul__, self)
-        net = (price_obj.net * self.rate).quantize(CENTS,
-                                                   rounding=ROUND_HALF_UP)
-        gross = (price_obj.gross * self.rate).quantize(CENTS,
-                                                       rounding=ROUND_HALF_UP)
-        return Price(net=net, gross=gross,
+        history = History(price_obj, operator.__add__, self)
+        return Price(net=price_obj.net * self.rate,
+                     gross=price_obj.gross * self.rate,
                      currency=self.to_currency, history=history)
