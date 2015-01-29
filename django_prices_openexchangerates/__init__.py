@@ -19,12 +19,11 @@ class CurrencyConversion(PriceModifier):
         self.rate = rate
 
     def __repr__(self):
-        return (
-            'CurrencyConversion(base_currency=%r, to_currency=%r rate=%r)' % (
+        return ('CurrencyConversion(%r, %r, rate=%r)' % (
                 self.base_currency, self.to_currency, self.rate))
 
     def apply(self, price_obj):
-        history = History(price_obj, operator.__add__, self)
+        history = History(price_obj, operator.__or__, self)
         return Price(net=price_obj.net * self.rate,
                      gross=price_obj.gross * self.rate,
                      currency=self.to_currency, history=history)

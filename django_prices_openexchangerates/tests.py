@@ -89,5 +89,5 @@ class CurrencyConversionModifierTestCase(TestCase):
     def test_repr(self):
         modifier = CurrencyConversion(base_currency='USD', to_currency='EUR',
                                       rate=Decimal('0.5'))
-        expected = "CurrencyConversion(base_currency='USD', to_currency='EUR' rate=Decimal('0.5'))"
+        expected = "CurrencyConversion('USD', 'EUR', rate=Decimal('0.5'))"
         self.assertEqual(repr(modifier), expected)
