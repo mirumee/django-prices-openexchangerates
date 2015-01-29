@@ -25,7 +25,7 @@ def extract_rate(rates, currency):
 def get_latest_exchange_rates():
     response = requests.get(ENDPOINT_LATEST, params={'app_id': API_KEY})
     response.raise_for_status()
-    return response.json(parse_int=Decimal, parse_float=Decimal)
+    return response.json(parse_int=Decimal, parse_float=Decimal)['rates']
 
 
 def update_conversion_rates():
