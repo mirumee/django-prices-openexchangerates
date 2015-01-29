@@ -3,12 +3,14 @@ from django.conf import settings
 from .models import ConversionRate
 from . import CurrencyConversion
 
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+
 
 def _convert_price(price, to_currency):
     if price.currency == to_currency:
         return price
     reverse_rate = False
-    if to_currency == settings.DEFAULT_CURRENCY:
+    if to_currency == BASE_CURRENCY:
         # Fetch exchange rate for price currency and use 1 / rate
         # for conversion
         rate_currency = price.currency
@@ -26,7 +28,6 @@ def _convert_price(price, to_currency):
             raise ValueError('Conversion rate for %s is 0', rate.to_currency)
     else:
         conversion_rate = rate.rate
-
     conversion = CurrencyConversion(
         base_currency=price.currency,
         to_currency=to_currency,
@@ -35,8 +36,8 @@ def _convert_price(price, to_currency):
 
 
 def exchange_currency(price, to_currency):
-    if price.currency != settings.DEFAULT_CURRENCY:
+    if price.currency != BASE_CURRENCY:
         # Convert to default currency
-        price = _convert_price(price, settings.DEFAULT_CURRENCY)
+        price = _convert_price(price, BASE_CURRENCY)
     return _convert_price(price, to_currency)
 

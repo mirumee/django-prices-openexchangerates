@@ -11,6 +11,8 @@ from .models import ConversionRate
 
 BASE_URL = r'http://openexchangerates.org/api'
 ENDPOINT_LATEST = BASE_URL + r'/latest.json'
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+
 try:
     API_KEY = settings.OPENEXCHANGERATES_API_KEY
 except AttributeError:
@@ -23,7 +25,9 @@ def extract_rate(rates, currency):
 
 
 def get_latest_exchange_rates():
-    response = requests.get(ENDPOINT_LATEST, params={'app_id': API_KEY})
+    response = requests.get(ENDPOINT_LATEST,
+                            params={'app_id': API_KEY,
+                                    'base': BASE_CURRENCY})
     response.raise_for_status()
     return response.json(parse_int=Decimal, parse_float=Decimal)['rates']
 

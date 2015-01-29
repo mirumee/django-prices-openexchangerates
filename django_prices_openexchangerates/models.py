@@ -11,6 +11,7 @@ from django.conf import settings
 
 from .currencies import CURRENCIES
 
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
 
 _thread_locals = local()
 
@@ -35,7 +36,7 @@ class CachingManager(models.Manager):
 @python_2_unicode_compatible
 class ConversionRate(models.Model):
 
-    base_currency = settings.DEFAULT_CURRENCY
+    base_currency = BASE_CURRENCY
 
     to_currency = models.CharField(
         _('To'), max_length=3, db_index=True,

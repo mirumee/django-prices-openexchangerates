@@ -9,4 +9,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for conversion_rate in update_conversion_rates():
-            self.stdout.write(str(conversion_rate))
+            self.stdout.write('%s' % (conversion_rate, ))
