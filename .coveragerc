@@ -1,0 +1,11 @@
+[run]
+branch = 1
+omit = */tests.py
+source = django_prices_openexchangerates
+
+[report]
+exclude_lines =
+    noqa
+    pragma: no cover
+    raise NotImplementedError
+    return NotImplemented
