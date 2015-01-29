@@ -1,51 +1,42 @@
-import logging
-
-from prices import Price
 from django.conf import settings
 
 from .models import ConversionRate
+from . import CurrencyConversion
 
 
-logger = logging.getLogger('django_prices_openexchangerates')
-
-
-def exchange_currency(price, to_currency=settings.DEFAULT_CURRENCY):
+def _convert_price(price, to_currency):
     if price.currency == to_currency:
         return price
-
-    converted_price = price.net
-
-    if to_currency != settings.DEFAULT_CURRENCY:
+    reverse_rate = False
+    if to_currency == settings.DEFAULT_CURRENCY:
+        # Fetch exchange rate for price currency and use 1 / rate
+        # for conversion
+        rate_currency = price.currency
+        reverse_rate = True
+    else:
+        rate_currency = to_currency
+    try:
+        rate = ConversionRate.objects.get_rate(rate_currency)
+    except ConversionRate.DoesNotExist:
+        raise ValueError('No conversion rate for %s' % (price.currency, ))
+    if reverse_rate:
         try:
-            rate = ConversionRate.objects.get_rate(to_currency)
-        except ConversionRate.DoesNotExist:
-            logger.error('Conversion rate for %s is zero, failed to convert',
-                         to_currency)
-            raise ValueError(
-                'no conversion rate for %s available' % to_currency)
-
-        converted_price = rate.from_base_currency(converted_price)
-
-    # convert the price currency to default currency
-    if price.currency != settings.DEFAULT_CURRENCY:
-        logger.debug('convert %s %s to %s', converted_price,
-                     price.currency, to_currency)
-        try:
-            rate = ConversionRate.objects.get_rate(price.currency)
-        except ConversionRate.DoesNotExist:
-            logger.error(
-                'tried to convert %s to %s but no conversion rate is '
-                'available in the database', price.currency,
-                settings.DEFAULT_CURRENCY)
-            raise ValueError(
-                'no conversion rate for %s available' % to_currency)
-        try:
-            converted_price = rate.to_base_currency(converted_price)
+            conversion_rate = 1 / rate.rate
         except ZeroDivisionError:
-            logger.error(
-                'Conversion rate for %s is zero, failed to convert',
-                rate.to_currency)
-            raise ValueError('conversion rate for %s is 0', rate.to_currency)
+            raise ValueError('Conversion rate for %s is 0', rate.to_currency)
+    else:
+        conversion_rate = rate.rate
 
-    return Price(currency=to_currency, net=converted_price,
-                 history=price.history)
+    conversion = CurrencyConversion(
+        base_currency=price.currency,
+        to_currency=to_currency,
+        rate=conversion_rate)
+    return conversion.apply(price)
+
+
+def exchange_currency(price, to_currency):
+    if price.currency != settings.DEFAULT_CURRENCY:
+        # Convert to default currency
+        price = _convert_price(price, settings.DEFAULT_CURRENCY)
+    return _convert_price(price, to_currency)
+

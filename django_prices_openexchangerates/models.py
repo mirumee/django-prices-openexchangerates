@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 from threading import local
 
 from django.core.exceptions import ValidationError
@@ -11,8 +11,6 @@ from django.conf import settings
 
 from .currencies import CURRENCIES
 
-
-CENTS = Decimal('0.01')
 
 _thread_locals = local()
 
@@ -53,16 +51,8 @@ class ConversionRate(models.Model):
     class Meta:
         ordering = ['to_currency']
 
-    def to_base_currency(self, value):
-        price = value / self.rate
-        return price.quantize(CENTS, rounding=ROUND_HALF_UP)
-
-    def from_base_currency(self, value):
-        price = value * self.rate
-        return price.quantize(CENTS, rounding=ROUND_HALF_UP)
-
     def save(self, *args, **kwargs):
-        """ Save the model instance but only on succesful validation. """
+        """ Save the model instance but only on successful validation. """
         self.full_clean()
         super(ConversionRate, self).save(*args, **kwargs)
 
@@ -75,10 +65,10 @@ class ConversionRate(models.Model):
         super(ConversionRate, self).clean()
 
     def __str__(self):
-        return '1 %s = %.04f %s' % (
-            self.base_currency, self.rate, self.to_currency)
+        return '1 %s = %.04f %s' % (self.base_currency, self.rate,
+                                    self.to_currency)
 
     def __repr__(self):
         return 'ConversionRate(pk=%d, base_currency=%s, to_currency=%s,' \
-               ' rate=%.04f)' % (
-            self.pk, self.base_currency, self.to_currency, self.rate)
+               ' rate=%.04f)' % (self.pk, self.base_currency, self.to_currency,
+                                 self.rate)
