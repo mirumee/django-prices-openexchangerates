@@ -6,6 +6,7 @@ from prices import Price
 
 from .utils import exchange_currency
 from .models import ConversionRate
+from . import CurrencyConversion
 
 
 RATES = {
@@ -21,7 +22,7 @@ def get_rates(currency):
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
             side_effect=get_rates)
-class CurrencyConversionModifierTestCase(TestCase):
+class CurrencyConversionTestCase(TestCase):
     def test_the_same_currency_uses_no_conversion(self, mock_qs):
         price = Price(10, currency='USD')
         converted = exchange_currency(price, 'USD')
@@ -65,7 +66,7 @@ class CurrencyConversionModifierTestCase(TestCase):
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
             side_effect=get_rates)
-class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionModifierTestCase):
+class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionTestCase):
 
     @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
     def test_the_same_currency_uses_no_conversion(self, mock_qs):
@@ -82,3 +83,11 @@ class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionModifi
     @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
     def test_convert_two_non_base_currencies(self, mock_qs):
         pass
+
+
+class CurrencyConversionModifierTestCase(TestCase):
+    def test_repr(self):
+        modifier = CurrencyConversion(base_currency='USD', to_currency='EUR',
+                                      rate=Decimal('0.5'))
+        expected = "CurrencyConversion(base_currency='USD', to_currency='EUR' rate=Decimal('0.5'))"
+        self.assertEqual(repr(modifier), expected)
