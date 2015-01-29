@@ -18,7 +18,7 @@ _thread_locals = local()
 
 class CachingManager(models.Manager):
 
-    def get_rate(self, to_currency):
+    def get_rate(self, to_currency):  # noqa
         if not hasattr(_thread_locals, 'conversion_rates'):
             _thread_locals.conversion_rates = {}
         if to_currency not in _thread_locals.conversion_rates:
@@ -52,12 +52,12 @@ class ConversionRate(models.Model):
     class Meta:
         ordering = ['to_currency']
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # noqa
         """ Save the model instance but only on successful validation. """
         self.full_clean()
         super(ConversionRate, self).save(*args, **kwargs)
 
-    def clean(self):
+    def clean(self):  # noqa
         if self.rate <= Decimal(0):
             raise ValidationError('Conversion rate has to be positive')
         if self.base_currency == self.to_currency:
@@ -65,11 +65,11 @@ class ConversionRate(models.Model):
                 'Can\'t set a conversion rate for the same currency')
         super(ConversionRate, self).clean()
 
-    def __str__(self):
+    def __str__(self):  # noqa
         return '1 %s = %.04f %s' % (self.base_currency, self.rate,
                                     self.to_currency)
 
-    def __repr__(self):
+    def __repr__(self):  # noqa
         return (
             'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)' % (
                 self.pk, self.base_currency, self.to_currency, self.rate))
