@@ -22,10 +22,7 @@ def _convert_price(price, to_currency):
     except ConversionRate.DoesNotExist:
         raise ValueError('No conversion rate for %s' % (price.currency, ))
     if reverse_rate:
-        try:
-            conversion_rate = 1 / rate.rate
-        except ZeroDivisionError:
-            raise ValueError('Conversion rate for %s is 0', rate.to_currency)
+        conversion_rate = 1 / rate.rate
     else:
         conversion_rate = rate.rate
     conversion = CurrencyConversion(
