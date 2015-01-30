@@ -33,7 +33,7 @@ Templatetags can be used to convert currency and round amounts:
 <p>Price: {% gross_in_currency foo.price 'USD' %} ({% net_in_currency foo.price 'USD' %} + {% tax_in_currency foo.price 'USD' %} tax)</p>
 ```
 
-When you install [`babel`](http://babel.edgewall.org/) library, you can use i18n templatetags and display proper currency symbols
+When you install babel-django library, you can use i18n templatetags and display proper currency symbols
 
 ```django
 {% load prices_multicurrency_i18n %}
