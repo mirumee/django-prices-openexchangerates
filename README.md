@@ -1,5 +1,4 @@
-# django-prices-openexchangerates
-openexchangerates.org support for django-prices
+# openexchangerates.org support for `django-prices`
 
 ```python
 from prices import Price
@@ -27,7 +26,7 @@ print(converted_price.history)
 
 Templatetags can be used to convert currency and round amounts:
 
-```django
+```html+django
 {% load prices_multicurrency %}
 
 <p>Price: {% gross_in_currency foo.price 'USD' %} ({% net_in_currency foo.price 'USD' %} + {% tax_in_currency foo.price 'USD' %} tax)</p>
@@ -35,7 +34,7 @@ Templatetags can be used to convert currency and round amounts:
 
 When you install babel-django library, you can use i18n templatetags and display proper currency symbols
 
-```django
+```html+django
 {% load prices_multicurrency_i18n %}
 
 <p>Price: {% gross_in_currency foo.price 'USD' %} ({% net_in_currency foo.price 'USD' %} + {% tax_in_currency foo.price 'USD' %} tax)</p>
