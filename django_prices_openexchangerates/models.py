@@ -11,7 +11,7 @@ from django.conf import settings
 
 from .currencies import CURRENCIES
 
-BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
 _thread_locals = local()
 
