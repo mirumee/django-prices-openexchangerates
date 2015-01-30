@@ -70,19 +70,19 @@ class CurrencyConversionTestCase(TestCase):
             side_effect=get_rates)
 class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionTestCase):
 
-    @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
     def test_the_same_currency_uses_no_conversion(self, mock_qs):
         pass
 
-    @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
     def test_base_currency_to_another(self, mock_qs):
         pass
 
-    @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
     def test_convert_another_to_base_currency(self, mock_qs):
         pass
 
-    @override_settings(OPENEXCHANGE_BASE_CURRENCY='BTC')
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
     def test_convert_two_non_base_currencies(self, mock_qs):
         pass
 

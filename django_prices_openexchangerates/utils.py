@@ -3,7 +3,7 @@ from django.conf import settings
 from .models import ConversionRate
 from . import CurrencyConversion
 
-BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
 
 def _convert_price(price, to_currency):
