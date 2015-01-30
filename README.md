@@ -42,18 +42,19 @@ When you install babel-django library, you can use i18n templatetags and display
 
 Installation
 ==============
+First install the package:
 ```
 pip install django-prices-openexchangerates
 ```
-Add `django_prices_openexchangerates` to `INSTALLED_APPS`
+Then add `'django_prices_openexchangerates'` to your `INSTALLED_APPS`.
 
-Set following settings in your project's settings.py:
+Set following settings in your project's settings:
 
  * `OPENEXCHANGERATES_API_KEY`
 
- * `OPENEXCHANGERATES_BASE_CURRENCY` (Only if you have premium account and you don't want to use USD as base currency)
+ * `OPENEXCHANGERATES_BASE_CURRENCY` (defaults to `'USD'`, only premium accounts support other bases)
 
-Create `ConversionRate` objects manually (for each currency, that you want to support)
+Use your admin console to create `ConversionRate` objects for each currency that you want to support.
 
 Updating exchange rates
 =======================
