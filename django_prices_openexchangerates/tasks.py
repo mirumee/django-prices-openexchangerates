@@ -10,7 +10,7 @@ from django.core.exceptions import ImproperlyConfigured
 from .models import ConversionRate
 
 ENDPOINT_LATEST = 'http://openexchangerates.org/api/latest.json'
-BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
 try:
     API_KEY = settings.OPENEXCHANGERATES_API_KEY
