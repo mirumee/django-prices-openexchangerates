@@ -4,11 +4,10 @@ import mock
 from django.test import TestCase, override_settings
 from prices import Price
 
-from .utils import exchange_currency
 from .models import ConversionRate
 from .templatetags.prices_multicurrency import (
     gross_in_currency, tax_in_currency, net_in_currency)
-from . import CurrencyConversion
+from . import CurrencyConversion, exchange_currency
 
 
 RATES = {
