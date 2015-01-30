@@ -6,9 +6,9 @@ from prices import Price
 from django_prices_openexchangerates import exchange_currency
 
 converted_price = exchange_currency(Price(10, currency='USD'), 'EUR')
-print converted_price
+print(converted_price)
 # Price('8.84040', currency='EUR')
-print converted_price.history
+print(converted_price.history)
 # (Price('10', currency='USD') | CurrencyConversion('USD', 'EUR', rate=Decimal('0.88404')))
 ```
 
@@ -19,9 +19,9 @@ from prices import Price
 from django_prices_openexchangerates import exchange_currency
 
 converted_price = exchange_currency(Price(10, currency='GBP'), 'EUR')
-print converted_price
+print(converted_price)
 # Price('13.31313588062401085236264978', currency='EUR')
-print converted_price.history
+print(converted_price.history)
 # ((Price('10', currency='GBP') | CurrencyConversion('GBP', 'USD', rate=Decimal('1.507272590247946341095787173'))) | CurrencyConversion('USD', 'EUR', rate=Decimal('0.88326')))
 ```
 
