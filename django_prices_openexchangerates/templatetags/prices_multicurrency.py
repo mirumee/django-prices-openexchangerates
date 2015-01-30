@@ -1,7 +1,7 @@
 from django.template import Library
 from django_prices.templatetags import prices
 
-from ..utils import exchange_currency
+from .. import exchange_currency
 
 register = Library()
 
