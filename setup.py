@@ -37,5 +37,5 @@ setup(
     platforms=['any'],
     tests_require=['mock==1.0.1'],
     test_suite='django_prices_openexchangerates.tests',
-    zip_safe=True)
+    zip_safe=False)
 
