@@ -13,6 +13,8 @@ BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
 
 CENTS = Decimal('0.01')
 
+default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExchangeRatesConfig'
+
 
 class CurrencyConversion(PriceModifier):
 
