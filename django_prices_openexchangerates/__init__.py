@@ -4,7 +4,7 @@ import operator
 from decimal import Decimal
 
 from django.conf import settings
-from prices import History, Price, PriceModifier
+from prices import History, Price, PriceModifier, PriceRange
 
 from .models import ConversionRate
 
@@ -65,6 +65,10 @@ def convert_price(price, to_currency):
 
 
 def exchange_currency(price, to_currency):
+    if isinstance(price, PriceRange):
+        return PriceRange(
+            exchange_currency(price.min_price, to_currency),
+            exchange_currency(price.max_price, to_currency))
     if price.currency != BASE_CURRENCY:
         # Convert to default currency
         price = convert_price(price, BASE_CURRENCY)
