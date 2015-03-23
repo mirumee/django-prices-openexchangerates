@@ -19,7 +19,7 @@ except AttributeError:
 
 
 def extract_rate(rates, currency):
-    base_rate = rates[settings.DEFAULT_CURRENCY]
+    base_rate = rates[BASE_CURRENCY]
     return rates[currency] / base_rate
 
 
