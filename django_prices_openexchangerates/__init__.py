@@ -72,4 +72,4 @@ def exchange_currency(price, to_currency):
     if price.currency != BASE_CURRENCY:
         # Convert to default currency
         price = convert_price(price, BASE_CURRENCY)
-    return convert_price(price, to_currency)
+    return convert_price(price, to_currency).quantize(CENTS)
