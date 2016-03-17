@@ -6,9 +6,6 @@ from decimal import Decimal
 from django.conf import settings
 from prices import History, Price, PriceModifier, PriceRange
 
-from .models import ConversionRate
-
-
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
 
 CENTS = Decimal('0.01')
@@ -39,6 +36,8 @@ class CurrencyConversion(PriceModifier):
 
 
 def convert_price(price, to_currency):
+    from .models import ConversionRate
+
     if price.currency == to_currency:
         return price
     reverse_rate = False

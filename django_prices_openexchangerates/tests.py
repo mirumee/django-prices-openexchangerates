@@ -1,14 +1,14 @@
 from decimal import Decimal
 
 import mock
+import django
 from django.test import TestCase, override_settings
 from prices import Price
-
-from .models import ConversionRate
 from .templatetags.prices_multicurrency import (
     gross_in_currency, tax_in_currency, net_in_currency)
 from . import CurrencyConversion, exchange_currency
 
+django.setup()
 
 RATES = {
     'USD': Decimal(1),
@@ -18,6 +18,7 @@ RATES = {
 
 
 def get_rates(currency):
+    from .models import ConversionRate
     return ConversionRate(to_currency=currency, rate=RATES[currency])
 
 
