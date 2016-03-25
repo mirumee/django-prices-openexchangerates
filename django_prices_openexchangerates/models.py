@@ -43,7 +43,7 @@ class ConversionRate(models.Model):
         choices=CURRENCIES.items(), unique=True)
 
     rate = models.DecimalField(
-        _('Conversion rate'), max_digits=12, decimal_places=5)
+        _('Conversion rate'), max_digits=13, decimal_places=6)
 
     modified_at = models.DateTimeField(auto_now=True)
 
