@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.conf import settings
 from prices import History, Price, PriceModifier, PriceRange
 
-BASE_CURRENCY = getattr(settings, 'OPENEXCHANGE_BASE_CURRENCY', 'USD')
+BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
 CENTS = Decimal('0.01')
 
