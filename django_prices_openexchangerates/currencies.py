@@ -151,7 +151,7 @@ CURRENCIES = {
     'TJS': _('Tajikistani Somoni'),
     'TMT': _('Turkmenistani Manat'),
     'TND': _('Tunisian Dinar'),
-    'TOP': _('Tongan Pa?anga'),
+    'TOP': _('Tongan Pa\'anga'),
     'TRY': _('Turkish Lira'),
     'TTD': _('Trinidad and Tobago Dollar'),
     'TWD': _('New Taiwan Dollar'),
