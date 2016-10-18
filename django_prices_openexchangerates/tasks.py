@@ -4,10 +4,13 @@ from __future__ import unicode_literals
 from decimal import Decimal
 
 import requests
+import logging
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 from .models import ConversionRate
+
+logger = logging.getLogger(__name__)
 
 ENDPOINT_LATEST = 'http://openexchangerates.org/api/latest.json'
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
@@ -40,3 +43,19 @@ def update_conversion_rates():
         conversion_rate.rate = new_exchange_rate
         conversion_rate.save(update_fields=['rate'])
     return conversion_rates
+
+
+def create_conversion_dates():
+    exchange_rates = get_latest_exchange_rates()
+    for currency in exchange_rates:
+        if currency == BASE_CURRENCY:
+            continue
+        rate = extract_rate(exchange_rates, currency)
+        try:
+            conversion_rate, _ = ConversionRate.objects.get_or_create(
+                to_currency=currency, rate=rate)
+        except Exception as e:
+            logger.exception('Unable to create ConversionRate',
+                             extra={'currency': currency, 'rate': rate})
+        else:
+            yield conversion_rate
