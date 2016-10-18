@@ -61,3 +61,5 @@ Updating exchange rates
 Fetch current rates from API with `./manage.py update_exchange_rates`
 
 Schedule this task in cron job or in celery, to be always up to date with exchange rates
+
+You can use `--all` flag in above command, to create exchange rates automatically for all available currencies.
