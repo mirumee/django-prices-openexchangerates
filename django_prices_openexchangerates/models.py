@@ -16,28 +16,23 @@ CACHE_KEY = getattr(settings, 'OPENEXCHANGERATES_CACHE_KEY', 'conversion_rates')
 CACHE_TIME = getattr(settings, 'OPENEXCHANGERATES_CACHE_TTL', 60*60)
 
 
+def get_rates(qs):
+    conversion_rates = cache.get(CACHE_KEY)
+    if not conversion_rates:
+        conversion_rates = {rate.to_currency: rate for rate in qs}
+        cache.set(CACHE_KEY, conversion_rates, CACHE_TIME)
+    return conversion_rates
+
+
 class CachingManager(models.Manager):
 
     def get_rate(self, to_currency):  # noqa
-        conversion_rates = cache.get(CACHE_KEY)
-        update_cache = False
-        if not conversion_rates:
-            conversion_rates = {}
-            update_cache = True
-
-        if to_currency not in conversion_rates:
-            rates = self.all()
-            for rate in rates:
-                conversion_rates[rate.to_currency] = rate
+        all_rates = get_rates(self.all())
         try:
-            rate = conversion_rates[to_currency]
+            return all_rates[to_currency]
         except KeyError:
-            rate = self.get(to_currency=to_currency)
-            conversion_rates[to_currency] = rate
-            update_cache = True
-        if update_cache:
-            cache.set(CACHE_KEY, conversion_rates, CACHE_TIME)
-        return rate
+            msg = 'ConversionRate for %s does not exist' % to_currency
+            raise ConversionRate.DoesNotExist(msg)
 
 
 @python_2_unicode_compatible
