@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
+
 # List of currencies supported by OpenExchange
 # http://openexchangerates.org/currencies.json
 
@@ -30,7 +31,8 @@ CURRENCIES = {
     'BTC': _('Bitcoin'),
     'BTN': _('Bhutanese Ngultrum'),
     'BWP': _('Botswanan Pula'),
-    'BYR': _('Belarusian Ruble'),
+    'BYN': _('Belarusian Ruble'),
+    'BYR': _('Belarusian Ruble (pre-2016)'),
     'BZD': _('Belize Dollar'),
     'CAD': _('Canadian Dollar'),
     'CDF': _('Congolese Franc'),
@@ -40,6 +42,7 @@ CURRENCIES = {
     'CNY': _('Chinese Yuan'),
     'COP': _('Colombian Peso'),
     'CRC': _('Costa Rican Colón'),
+    'CUC': _('Cuban Convertible Peso'),
     'CUP': _('Cuban Peso'),
     'CVE': _('Cape Verdean Escudo'),
     'CZK': _('Czech Republic Koruna'),
@@ -97,7 +100,7 @@ CURRENCIES = {
     'LVL': _('Latvian Lats'),
     'LYD': _('Libyan Dinar'),
     'MAD': _('Moroccan Dirham'),
-    'MDL': _('Moldovan Le'),
+    'MDL': _('Moldovan Leu'),
     'MGA': _('Malagasy Ariary'),
     'MKD': _('Macedonian Denar'),
     'MMK': _('Myanma Kyat'),
@@ -126,7 +129,7 @@ CURRENCIES = {
     'PLN': _('Polish Zloty'),
     'PYG': _('Paraguayan Guarani'),
     'QAR': _('Qatari Rial'),
-    'RON': _('Romanian Le'),
+    'RON': _('Romanian Leu'),
     'RSD': _('Serbian Dinar'),
     'RUB': _('Russian Ruble'),
     'RWF': _('Rwandan Franc'),
@@ -148,7 +151,7 @@ CURRENCIES = {
     'TJS': _('Tajikistani Somoni'),
     'TMT': _('Turkmenistani Manat'),
     'TND': _('Tunisian Dinar'),
-    'TOP': _('Tongan Paʻanga'),
+    'TOP': _('Tongan Pa?anga'),
     'TRY': _('Turkish Lira'),
     'TTD': _('Trinidad and Tobago Dollar'),
     'TWD': _('New Taiwan Dollar'),
@@ -156,20 +159,24 @@ CURRENCIES = {
     'UAH': _('Ukrainian Hryvnia'),
     'UGX': _('Ugandan Shilling'),
     'USD': _('United States Dollar'),
-    'UY': _('Uruguayan Peso'),
+    'UYU': _('Uruguayan Peso'),
     'UZS': _('Uzbekistan Som'),
     'VEF': _('Venezuelan Bolívar Fuerte'),
     'VND': _('Vietnamese Dong'),
-    'VUV': _('Vanuatu Vat'),
+    'VUV': _('Vanuatu Vatu'),
     'WST': _('Samoan Tala'),
     'XAF': _('CFA Franc BEAC'),
-    'XAG': _('Silver (troy ounce)'),
-    'XA': _('Gold (troy ounce)'),
+    'XAG': _('Silver Ounce'),
+    'XAU': _('Gold Ounce'),
     'XCD': _('East Caribbean Dollar'),
     'XDR': _('Special Drawing Rights'),
     'XOF': _('CFA Franc BCEAO'),
+    'XPD': _('Palladium Ounce'),
     'XPF': _('CFP Franc'),
+    'XPT': _('Platinum Ounce'),
     'YER': _('Yemeni Rial'),
     'ZAR': _('South African Rand'),
+    'ZMK': _('Zambian Kwacha (pre-2013)'),
     'ZMW': _('Zambian Kwacha'),
-    'ZWL': _('Zimbabwean Dollar')}
+    'ZWL': _('Zimbabwean Dollar')
+}
