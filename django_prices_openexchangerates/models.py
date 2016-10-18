@@ -12,13 +12,14 @@ from django.utils.encoding import python_2_unicode_compatible
 from .currencies import CURRENCIES
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
-CACHE_KEY = getattr(settings, 'OPENEXCHANGERATES_CACHE_KEY', 'conversion_rates')
+CACHE_KEY = getattr(settings, 'OPENEXCHANGERATES_CACHE_KEY',
+                    'openexchangerates_conversion_rates')
 CACHE_TIME = getattr(settings, 'OPENEXCHANGERATES_CACHE_TTL', 60*60)
 
 
-def get_rates(qs):
+def get_rates(qs, force_refresh=False):
     conversion_rates = cache.get(CACHE_KEY)
-    if not conversion_rates:
+    if not conversion_rates or force_refresh:
         conversion_rates = {rate.to_currency: rate for rate in qs}
         cache.set(CACHE_KEY, conversion_rates, CACHE_TIME)
     return conversion_rates
