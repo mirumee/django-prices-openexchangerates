@@ -17,13 +17,13 @@ RATES = {
     'BTC': Decimal(10)}
 
 
-def get_rates(currency):
+def mock_rates(currency):
     from .models import ConversionRate
     return ConversionRate(to_currency=currency, rate=RATES[currency])
 
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
-            side_effect=get_rates)
+            side_effect=mock_rates)
 class CurrencyConversionTestCase(TestCase):
     def test_the_same_currency_uses_no_conversion(self, mock_qs):
         price = Price(10, currency='USD')
@@ -67,7 +67,7 @@ class CurrencyConversionTestCase(TestCase):
 
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
-            side_effect=get_rates)
+            side_effect=mock_rates)
 class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionTestCase):
 
     @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
@@ -95,7 +95,7 @@ class CurrencyConversionModifierTestCase(TestCase):
         self.assertEqual(repr(modifier), expected)
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
-            side_effect=get_rates)
+            side_effect=mock_rates)
 class PricesMultiCurrencyTestCase(TestCase):
 
     def test_gross_in_currency(self, mock_qs):
@@ -116,3 +116,22 @@ class PricesMultiCurrencyTestCase(TestCase):
         result = net_in_currency(price, 'EUR')
         self.assertEqual(result, {'currency': 'EUR',
                                   'amount': Decimal('2.47')})
+
+
+@mock.patch('django_prices_openexchangerates.models.cache')
+class CachingManagerTestCase(TestCase):
+
+    def test_get_rates_caches_results(self, mock_cache):
+        from .models import get_rates, CACHE_KEY
+        mock_qs = [mock_rates(currency) for currency in RATES]
+        get_rates(qs=mock_qs)
+        mock_cache.get.assert_called_with(CACHE_KEY)
+
+    def test_get_rates_force_update_cache(self, mock_cache):
+        from .models import get_rates, CACHE_KEY, CACHE_TIME
+        mock_qs = [mock_rates(currency) for currency in RATES]
+        expected_cache_content = {rate.to_currency: rate for rate in mock_qs}
+        rates = get_rates(qs=mock_qs, force_refresh=True)
+        mock_cache.set.assert_called_with(
+            CACHE_KEY, expected_cache_content, CACHE_TIME)
+        self.assertEqual(rates, expected_cache_content)
