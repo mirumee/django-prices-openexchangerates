@@ -8,7 +8,7 @@ import logging
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from .models import ConversionRate
+from .models import ConversionRate, get_rates
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ def update_conversion_rates():
                                          conversion_rate.to_currency)
         conversion_rate.rate = new_exchange_rate
         conversion_rate.save(update_fields=['rate'])
+    get_rates(ConversionRate.objects.all(), force_refresh=True)
     return conversion_rates
 
 

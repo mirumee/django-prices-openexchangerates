@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 
 from decimal import Decimal
-from threading import local
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
@@ -12,25 +12,28 @@ from django.utils.encoding import python_2_unicode_compatible
 from .currencies import CURRENCIES
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
+CACHE_KEY = getattr(settings, 'OPENEXCHANGERATES_CACHE_KEY',
+                    'openexchangerates_conversion_rates')
+CACHE_TIME = getattr(settings, 'OPENEXCHANGERATES_CACHE_TTL', 60*60)
 
-_thread_locals = local()
+
+def get_rates(qs, force_refresh=False):
+    conversion_rates = cache.get(CACHE_KEY)
+    if not conversion_rates or force_refresh:
+        conversion_rates = {rate.to_currency: rate for rate in qs}
+        cache.set(CACHE_KEY, conversion_rates, CACHE_TIME)
+    return conversion_rates
 
 
 class CachingManager(models.Manager):
 
     def get_rate(self, to_currency):  # noqa
-        if not hasattr(_thread_locals, 'conversion_rates'):
-            _thread_locals.conversion_rates = {}
-        if to_currency not in _thread_locals.conversion_rates:
-            rates = self.all()
-            for rate in rates:
-                _thread_locals.conversion_rates[rate.to_currency] = rate
+        all_rates = get_rates(self.all())
         try:
-            rate = _thread_locals.conversion_rates[to_currency]
+            return all_rates[to_currency]
         except KeyError:
-            rate = self.get(to_currency=to_currency)
-            _thread_locals.conversion_rates[to_currency] = rate
-        return rate
+            msg = 'ConversionRate for %s does not exist' % to_currency
+            raise ConversionRate.DoesNotExist(msg)
 
 
 @python_2_unicode_compatible
