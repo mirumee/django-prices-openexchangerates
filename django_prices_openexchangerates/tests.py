@@ -1,3 +1,4 @@
+# coding: utf-8
 from decimal import Decimal
 
 import mock
@@ -121,18 +122,18 @@ class PricesMultiCurrencyTestCase(TestCase):
     def test_gross_in_currency_with_kwargs(self, mock_qs):
         price = Price(net=Decimal('1.23456789'), currency='USD')
         result = prices_i18n.gross_in_currency(price, 'EUR', html=True)
-        self.assertEqual(result, '<span class="currency">€</span>2.47')
+        self.assertEqual(result, u'<span class="currency">€</span>2.47')
 
     def test_tax_in_currency_with_kwargs(self, mock_qs):
         price = Price(net=Decimal(1), gross=Decimal('2.3456'),
                       currency='USD')
         result = prices_i18n.tax_in_currency(price, 'EUR', html=True)
-        self.assertEqual(result, '<span class="currency">€</span>2.69')
+        self.assertEqual(result, u'<span class="currency">€</span>2.69')
 
     def test_net_in_currency_with_kwargs(self, mock_qs):
         price = Price(net=Decimal('1.23456789'), currency='USD')
         result = prices_i18n.net_in_currency(price, 'EUR', html=True)
-        self.assertEqual(result, '<span class="currency">€</span>2.47')
+        self.assertEqual(result, u'<span class="currency">€</span>2.47')
 
 
 @mock.patch('django_prices_openexchangerates.models.cache')
