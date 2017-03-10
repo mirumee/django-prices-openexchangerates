@@ -24,7 +24,7 @@ setup(
     author_email='hello@mirumee.com',
     description='openexchangerates.org support for django-prices',
     license='BSD',
-    version='0.1.12',
+    version='0.1.13',
     url='https://github.com/mirumee/django-prices-openexchanerates',
     packages=[
         'django_prices_openexchangerates',
