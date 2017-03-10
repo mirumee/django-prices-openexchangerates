@@ -7,21 +7,21 @@ register = Library()
 
 
 @register.simple_tag  # noqa
-def gross_in_currency(price, currency):  # noqa
+def gross_in_currency(price, currency, **kwargs):  # noqa
     converted_price = exchange_currency(price, currency)
-    return prices_i18n.gross(converted_price)
+    return prices_i18n.gross(converted_price, **kwargs)
 
 
 @register.simple_tag  # noqa
-def net_in_currency(price, currency):  # noqa
+def net_in_currency(price, currency, **kwargs):  # noqa
     converted_price = exchange_currency(price, currency)
-    return prices_i18n.net(converted_price)
+    return prices_i18n.net(converted_price, **kwargs)
 
 
 @register.simple_tag  # noqa
-def tax_in_currency(price, currency):  # noqa
+def tax_in_currency(price, currency, **kwargs):  # noqa
     converted_price = exchange_currency(price, currency)
-    return prices_i18n.tax(converted_price)
+    return prices_i18n.tax(converted_price, **kwargs)
 
 
 @register.simple_tag
