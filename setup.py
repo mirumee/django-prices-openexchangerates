@@ -25,7 +25,7 @@ setup(
     description='openexchangerates.org support for django-prices',
     license='BSD',
     version='0.1.13',
-    url='https://github.com/mirumee/django-prices-openexchanerates',
+    url='https://github.com/mirumee/django-prices-openexchangerates',
     packages=[
         'django_prices_openexchangerates',
         'django_prices_openexchangerates.management',
