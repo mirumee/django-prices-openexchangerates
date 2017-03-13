@@ -43,7 +43,7 @@ class ConversionRate(models.Model):
 
     to_currency = models.CharField(
         _('To'), max_length=3, db_index=True,
-        choices=CURRENCIES.items(), unique=True)
+        choices=sorted(CURRENCIES.items(), key=lambda x: x[0]), unique=True)
 
     rate = models.DecimalField(
         _('Conversion rate'), max_digits=20, decimal_places=12)
