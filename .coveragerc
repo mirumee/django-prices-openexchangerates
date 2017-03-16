@@ -1,6 +1,8 @@
 [run]
 branch = 1
-omit = */tests.py
+omit =
+    */migrations/*
+    */tests.py
 source = django_prices_openexchangerates
 
 [report]
