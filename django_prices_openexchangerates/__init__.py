@@ -35,7 +35,7 @@ class CurrencyConversion(PriceModifier):
                      currency=self.to_currency, history=history)
 
 
-def convert_price(price, to_currency):
+def convert_price(price, to_currency, all_rates=None):
     from .models import ConversionRate
 
     if price.currency == to_currency:
@@ -48,10 +48,18 @@ def convert_price(price, to_currency):
         reverse_rate = True
     else:
         rate_currency = to_currency
-    try:
-        rate = ConversionRate.objects.get_rate(rate_currency)
-    except ConversionRate.DoesNotExist:  # noqa
-        raise ValueError('No conversion rate for %s' % (rate_currency, ))
+    if all_rates is None:
+        try:
+            rate = ConversionRate.objects.get_rate(rate_currency)
+        except ConversionRate.DoesNotExist:  # noqa
+            raise ValueError('No conversion rate for %s' % (rate_currency, ))
+    else:
+        try:
+            rate = all_rates[rate_currency]
+        except KeyError:
+            raise ValueError('No conversion rate for %s found in rates dict' % (
+                rate_currency,))
+
     if reverse_rate:
         conversion_rate = 1 / rate.rate
     else:
@@ -63,12 +71,12 @@ def convert_price(price, to_currency):
     return conversion.apply(price)
 
 
-def exchange_currency(price, to_currency):
+def exchange_currency(price, to_currency, all_rates=None):
     if isinstance(price, PriceRange):
         return PriceRange(
             exchange_currency(price.min_price, to_currency),
             exchange_currency(price.max_price, to_currency))
     if price.currency != BASE_CURRENCY:
         # Convert to default currency
-        price = convert_price(price, BASE_CURRENCY)
-    return convert_price(price, to_currency)
+        price = convert_price(price, BASE_CURRENCY, all_rates=all_rates)
+    return convert_price(price, to_currency, all_rates=all_rates)
