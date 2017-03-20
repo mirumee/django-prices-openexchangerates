@@ -35,9 +35,23 @@ class CurrencyConversion(PriceModifier):
                      currency=self.to_currency, history=history)
 
 
-def convert_price(price, to_currency):
+def get_conversion_rate(currency):
+    """
+    Fetch currency conversion rate from the database
+    """
     from .models import ConversionRate
+    try:
+        rate = ConversionRate.objects.get_rate(currency)
+    except ConversionRate.DoesNotExist:  # noqa
+        raise ValueError('No conversion rate for %s' % (currency, ))
+    return rate.rate
 
+
+def convert_price(price, to_currency, get_rate=get_conversion_rate):
+    """
+    Converts Price object to specified currency.
+    get_rate parameter is a callable that returns proper conversion rate
+    """
     if price.currency == to_currency:
         return price
     reverse_rate = False
@@ -48,14 +62,12 @@ def convert_price(price, to_currency):
         reverse_rate = True
     else:
         rate_currency = to_currency
-    try:
-        rate = ConversionRate.objects.get_rate(rate_currency)
-    except ConversionRate.DoesNotExist:  # noqa
-        raise ValueError('No conversion rate for %s' % (rate_currency, ))
+    rate = get_rate(rate_currency)
+
     if reverse_rate:
-        conversion_rate = 1 / rate.rate
+        conversion_rate = 1 / rate
     else:
-        conversion_rate = rate.rate
+        conversion_rate = rate
     conversion = CurrencyConversion(
         base_currency=price.currency,
         to_currency=to_currency,
@@ -63,12 +75,15 @@ def convert_price(price, to_currency):
     return conversion.apply(price)
 
 
-def exchange_currency(price, to_currency):
+def exchange_currency(price, to_currency, get_rate=get_conversion_rate):
+    """
+    Exchanges Price or PriceRange to the specified currency
+    """
     if isinstance(price, PriceRange):
         return PriceRange(
             exchange_currency(price.min_price, to_currency),
             exchange_currency(price.max_price, to_currency))
     if price.currency != BASE_CURRENCY:
         # Convert to default currency
-        price = convert_price(price, BASE_CURRENCY)
-    return convert_price(price, to_currency)
+        price = convert_price(price, BASE_CURRENCY, get_rate=get_rate)
+    return convert_price(price, to_currency, get_rate=get_rate)

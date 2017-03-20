@@ -67,6 +67,18 @@ class CurrencyConversionTestCase(TestCase):
         self.assertEqual(second_operation.base_currency, 'USD')
         self.assertEqual(second_operation.to_currency, 'GBP')
 
+    def test_convert_price_uses_passed_dict(self, mock_qs):
+        base_price = Price(10, currency='USD')
+
+        def custom_get_rate(currency):
+            data = {'GBP': Decimal(5)}
+            return data[currency]
+
+        converted_price = exchange_currency(
+            base_price, 'GBP', get_rate=custom_get_rate)
+        self.assertFalse(mock_qs.called)
+        self.assertEqual(converted_price.currency, 'GBP')
+
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
             side_effect=mock_rates)
@@ -86,6 +98,14 @@ class CurrencyConversionWithAnotherBaseCurrencyTestCase(CurrencyConversionTestCa
 
     @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
     def test_convert_two_non_base_currencies(self, mock_qs):
+        pass
+
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
+    def test_convert_price_uses_passed_dict(self, mock_qs):
+        pass
+
+    @override_settings(OPENEXCHANGERATES_BASE_CURRENCY='BTC')
+    def test_convert_price_uses_db_when_dict_not_passed(self, mock_qs):
         pass
 
 
