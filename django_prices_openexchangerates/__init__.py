@@ -4,7 +4,7 @@ import operator
 from decimal import Decimal
 
 from django.conf import settings
-from prices import Price, PriceRange
+from prices import Amount, Price, PriceRange
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
@@ -29,9 +29,9 @@ class CurrencyConversion(object):
                 self.base_currency, self.to_currency, self.rate))
 
     def apply(self, price_obj):
-        if isinstance(price_obj, Price):
-            return Price(net=price_obj.net * self.rate,
-                         gross=price_obj * self.rate)
+        if isinstance(price_obj, Amount):
+            return Amount(
+                price_obj.value * self.rate, currency=self.to_currency)
 
 
 def get_conversion_rate(currency):

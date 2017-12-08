@@ -1,5 +1,6 @@
 from django.template import Library
 from django_prices.templatetags import prices_i18n
+from prices import Price
 
 from .. import exchange_currency
 
@@ -8,19 +9,22 @@ register = Library()
 
 @register.simple_tag  # noqa
 def gross_in_currency(price, currency, **kwargs):  # noqa
-    converted_price = exchange_currency(price, currency)
+    converted_price = Price(net=exchange_currency(price.net, currency),
+                            gross=exchange_currency(price.gross, currency))
     return prices_i18n.gross(converted_price, **kwargs)
 
 
 @register.simple_tag  # noqa
 def net_in_currency(price, currency, **kwargs):  # noqa
-    converted_price = exchange_currency(price, currency)
+    converted_price = Price(net=exchange_currency(price.net, currency),
+                            gross=exchange_currency(price.gross, currency))
     return prices_i18n.net(converted_price, **kwargs)
 
 
 @register.simple_tag  # noqa
 def tax_in_currency(price, currency, **kwargs):  # noqa
-    converted_price = exchange_currency(price, currency)
+    converted_price = Price(net=exchange_currency(price.net, currency),
+                            gross=exchange_currency(price.gross, currency))
     return prices_i18n.tax(converted_price, **kwargs)
 
 
