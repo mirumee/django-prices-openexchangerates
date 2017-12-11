@@ -5,8 +5,6 @@ import mock
 import django
 from django.test import TestCase, override_settings
 from prices import Amount, Price
-from .templatetags.prices_multicurrency import (
-    gross_in_currency, tax_in_currency, net_in_currency)
 from .templatetags import prices_multicurrency_i18n as prices_i18n
 from . import CurrencyConversion, exchange_currency
 
@@ -100,27 +98,6 @@ class CurrencyConversionModifierTestCase(TestCase):
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
             side_effect=mock_rates)
 class PricesMultiCurrencyTestCase(TestCase):
-
-    def test_gross_in_currency(self, mock_qs):
-        price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-                      gross=Amount(Decimal('1.23456789'), currency='USD'))
-        result = gross_in_currency(price, 'EUR')
-        self.assertEqual(result, {'currency': 'EUR',
-                                  'amount': Decimal('2.47')})
-
-    def test_tax_in_currency(self, mock_qs):
-        price = Price(net=Amount(Decimal(1), currency='USD'),
-                      gross=Amount(Decimal('2.3456'), currency='USD'))
-        result = tax_in_currency(price, 'EUR')
-        self.assertEqual(result, {'currency': 'EUR',
-                                  'amount': Decimal('2.69')})
-
-    def test_net_in_currency(self, mock_qs):
-        price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-                      gross=Amount(Decimal('2.3456'), currency='USD'))
-        result = net_in_currency(price, 'EUR')
-        self.assertEqual(result, {'currency': 'EUR',
-                                  'amount': Decimal('2.47')})
 
     def test_gross_in_currency_with_kwargs(self, mock_qs):
         price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
