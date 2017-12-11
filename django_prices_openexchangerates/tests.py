@@ -28,9 +28,9 @@ def mock_rates(currency):
             side_effect=mock_rates)
 class CurrencyConversionTestCase(TestCase):
     def test_the_same_currency_uses_no_conversion(self, mock_qs):
-        price = Amount(10, currency='USD')
-        converted = exchange_currency(price, 'USD')
-        self.assertEqual(converted, price)
+        amount = Amount(10, currency='USD')
+        converted = exchange_currency(amount, 'USD')
+        self.assertEqual(converted, amount)
 
     def test_base_currency_to_another(self, mock_qs):
         converted = exchange_currency(Amount(10, currency='USD'), 'EUR')
@@ -38,26 +38,26 @@ class CurrencyConversionTestCase(TestCase):
         self.assertIsNotNone(converted)
 
     def test_convert_another_to_base_currency(self, mock_qs):
-        base_price = Amount(10, currency='EUR')
-        converted_price = exchange_currency(base_price, 'USD')
-        self.assertEqual(converted_price.currency, 'USD')
+        base_amount = Amount(10, currency='EUR')
+        converted_amount = exchange_currency(base_amount, 'USD')
+        self.assertEqual(converted_amount.currency, 'USD')
 
     def test_convert_two_non_base_currencies(self, mock_qs):
-        base_price = Amount(10, currency='EUR')
-        converted_price = exchange_currency(base_price, 'GBP')
-        self.assertEqual(converted_price.currency, 'GBP')
+        base_amount = Amount(10, currency='EUR')
+        converted_amount = exchange_currency(base_amount, 'GBP')
+        self.assertEqual(converted_amount.currency, 'GBP')
 
     def test_convert_price_uses_passed_dict(self, mock_qs):
-        base_price = Amount(10, currency='USD')
+        base_amount = Amount(10, currency='USD')
 
         def custom_get_rate(currency):
             data = {'GBP': Decimal(5)}
             return data[currency]
 
-        converted_price = exchange_currency(
-            base_price, 'GBP', get_rate=custom_get_rate)
+        converted_amount = exchange_currency(
+            base_amount, 'GBP', get_rate=custom_get_rate)
         self.assertFalse(mock_qs.called)
-        self.assertEqual(converted_price.currency, 'GBP')
+        self.assertEqual(converted_amount.currency, 'GBP')
 
 
 @mock.patch('django_prices_openexchangerates.models.ConversionRate.objects.get_rate',
