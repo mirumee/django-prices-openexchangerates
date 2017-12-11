@@ -37,6 +37,7 @@ setup(
     classifiers=CLASSIFIERS,
     install_requires=['Django>=1.4', 'django-prices>=0.6.1', 'prices>=1.0.0-beta'],
     platforms=['any'],
+    setup_requires=['pytest-runner'],
     tests_require=['mock==1.0.1', 'pytest'],
     test_suite='django_prices_openexchangerates.tests',
     zip_safe=False)

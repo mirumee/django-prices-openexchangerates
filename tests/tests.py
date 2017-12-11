@@ -1,4 +1,6 @@
 # coding: utf-8
+from __future__ import unicode_literals
+
 from decimal import Decimal
 
 import mock
@@ -8,11 +10,11 @@ from django_prices_openexchangerates.models import (
     ConversionRate, get_rates, CACHE_KEY, CACHE_TIME)
 from django_prices_openexchangerates.templatetags import (
     prices_multicurrency_i18n as prices_i18n)
-from django_prices_openexchangerates import CurrencyConversion, exchange_currency
+from django_prices_openexchangerates import (
+    CurrencyConversion, exchange_currency)
 
 
 RATES = {
-    # 'USD': Decimal(1),
     'EUR': Decimal(2),
     'GBP': Decimal(4),
     'BTC': Decimal(10)}
@@ -117,7 +119,7 @@ def test_two_base_currencies_convert_price_uses_db_when_dict_not_passed():
 def test_repr():
     modifier = CurrencyConversion(base_currency='USD', to_currency='EUR',
                                   rate=Decimal('0.5'))
-    expected = "CurrencyConversion('USD', 'EUR', rate=Decimal('0.5'))"
+    expected = "CurrencyConversion(u'USD', u'EUR', rate=Decimal('0.5'))"
     assert repr(modifier) == expected
 
 

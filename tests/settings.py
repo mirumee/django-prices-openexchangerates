@@ -10,9 +10,3 @@ TEMPLATES = [
         'APP_DIRS': True}]
 
 DATABASES = {}
-
-if 'sqlite' in DATABASES['default']['ENGINE']:
-    DATABASES['default']['TEST'] = {  # noqa
-        'SERIALIZE': False,
-        'NAME': ':memory:',
-        'MIRROR': None}
