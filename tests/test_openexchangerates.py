@@ -119,7 +119,7 @@ def test_two_base_currencies_convert_price_uses_db_when_dict_not_passed():
 def test_repr():
     modifier = CurrencyConversion(base_currency='USD', to_currency='EUR',
                                   rate=Decimal('0.5'))
-    expected = "CurrencyConversion(u'USD', u'EUR', rate=Decimal('0.5'))"
+    expected = "CurrencyConversion('USD', 'EUR', rate=Decimal('0.5'))"
     assert repr(modifier) == expected
 
 
