@@ -123,25 +123,25 @@ def test_repr():
     assert repr(modifier) == expected
 
 
-def test_gross_in_currency_with_kwargs():
-    price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-                  gross=Amount(Decimal('1.23456789'), currency='USD'))
-    result = prices_i18n.gross_in_currency(price, 'EUR', html=True)
-    assert result == u'<span class="currency">€</span>2.47'
-
-
-def test_tax_in_currency_with_kwargs():
-    price = Price(net=Amount(Decimal(1), currency='USD'),
-                  gross=Amount(Decimal('2.3456'), currency='USD'))
-    result = prices_i18n.tax_in_currency(price, 'EUR', html=True)
-    assert result == u'<span class="currency">€</span>2.69'
-
-
-def test_net_in_currency_with_kwargs():
-    price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-                  gross=Amount(Decimal('2.3456'), currency='USD'))
-    result = prices_i18n.net_in_currency(price, 'EUR', html=True)
-    assert result == u'<span class="currency">€</span>2.47'
+# def test_gross_in_currency_with_kwargs():
+#     price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
+#                   gross=Amount(Decimal('1.23456789'), currency='USD'))
+#     result = prices_i18n.gross_in_currency(price, 'EUR', html=True)
+#     assert result == u'<span class="currency">€</span>2.47'
+#
+#
+# def test_tax_in_currency_with_kwargs():
+#     price = Price(net=Amount(Decimal(1), currency='USD'),
+#                   gross=Amount(Decimal('2.3456'), currency='USD'))
+#     result = prices_i18n.tax_in_currency(price, 'EUR', html=True)
+#     assert result == u'<span class="currency">€</span>2.69'
+#
+#
+# def test_net_in_currency_with_kwargs():
+#     price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
+#                   gross=Amount(Decimal('2.3456'), currency='USD'))
+#     result = prices_i18n.net_in_currency(price, 'EUR', html=True)
+#     assert result == u'<span class="currency">€</span>2.47'
 
 
 # @mock.patch('django_prices_openexchangerates.models.cache')
