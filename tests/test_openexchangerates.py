@@ -169,17 +169,13 @@ def test_template_filter_amount_i18n_in_currency_amount_html_normalize():
     assert result == '<span class="currency">€</span>2.47'
 
 
-# @mock.patch('django_prices_openexchangerates.models.cache')
-# def test_get_rates_caches_results(mock_cache, conversion_rates):
-#     get_rates(qs=conversion_rates)
-#     mock_cache.get.assert_called_with(CACHE_KEY)
-#
-#
-# @mock.patch('django_prices_openexchangerates.models.cache')
-# def test_get_rates_force_update_cache(mock_cache, conversion_rates):
-#     expected_cache_content = {
-#         rate.to_currency: rate for rate in conversion_rates}
-#     rates = get_rates(qs=conversion_rates, force_refresh=True)
-#     mock_cache.set.assert_called_with(
-#         CACHE_KEY, expected_cache_content, CACHE_TIME)
-#     assert rates == expected_cache_content
+def test_get_rates_caches_results(conversion_rates):
+    result = get_rates(qs=conversion_rates)
+    assert all(currency in result.keys() for currency in ['BTC', 'GBP', 'EUR'])
+
+
+def test_get_rates_force_update_cache(conversion_rates):
+    expected_cache_content = {
+        rate.to_currency: rate for rate in conversion_rates}
+    rates = get_rates(qs=conversion_rates, force_refresh=True)
+    assert rates == expected_cache_content
