@@ -155,11 +155,17 @@ def test_template_filter_amount_i18n_in_currency_amount():
     assert result == '€2.47'
 
 
+def test_template_filter_amount_i18n_in_currency_amount_normalize():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices_i18n.in_currency(amount, 'EUR')
+    result = rates_prices_i18n.amount(result, normalize=True)
+    assert result == '€2.47'
+
+
 def test_template_filter_amount_i18n_in_currency_amount_html_normalize():
     amount = Amount(Decimal('1.23456789'), currency='USD')
     result = rates_prices_i18n.in_currency(amount, 'EUR')
-    result = rates_prices_i18n.amount(
-        result, html=True, normalize=True)
+    result = rates_prices_i18n.amount_html(result, normalize=True)
     assert result == '<span class="currency">€</span>2.47'
 
 
