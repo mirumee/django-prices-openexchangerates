@@ -6,10 +6,12 @@ from decimal import Decimal
 # import mock
 import pytest
 from prices import Amount, Price
+from django_prices.templatetags import prices, prices_i18n
 from django_prices_openexchangerates.models import (
     ConversionRate, get_rates, CACHE_KEY, CACHE_TIME)
 from django_prices_openexchangerates.templatetags import (
-    prices_multicurrency_i18n as prices_i18n)
+    prices_multicurrency as rates_prices,
+    prices_multicurrency_i18n as rates_prices_i18n)
 from django_prices_openexchangerates import (
     CurrencyConversion, exchange_currency)
 
@@ -127,25 +129,31 @@ def test_repr():
     assert repr(modifier) == expected
 
 
-# def test_gross_in_currency_with_kwargs():
-#     price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-#                   gross=Amount(Decimal('1.23456789'), currency='USD'))
-#     result = prices_i18n.gross_in_currency(price, 'EUR', html=True)
-#     assert result == u'<span class="currency">€</span>2.47'
-#
-#
-# def test_tax_in_currency_with_kwargs():
-#     price = Price(net=Amount(Decimal(1), currency='USD'),
-#                   gross=Amount(Decimal('2.3456'), currency='USD'))
-#     result = prices_i18n.tax_in_currency(price, 'EUR', html=True)
-#     assert result == u'<span class="currency">€</span>2.69'
-#
-#
-# def test_net_in_currency_with_kwargs():
-#     price = Price(net=Amount(Decimal('1.23456789'), currency='USD'),
-#                   gross=Amount(Decimal('2.3456'), currency='USD'))
-#     result = prices_i18n.net_in_currency(price, 'EUR', html=True)
-#     assert result == u'<span class="currency">€</span>2.47'
+def test_template_filter_amount_in_currency():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices.in_currency(amount=amount, currency='EUR')
+    assert result == Amount(Decimal('2.47'), currency='EUR')
+
+
+def test_template_filter_amount_in_currency_amount():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices.in_currency(amount=amount, currency='EUR')
+    result = prices.amount(result)
+    assert result == '2.47 <span class="currency">EUR</span>'
+
+
+def test_template_filteramount_i18n_in_currency_amount():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices.in_currency(amount, 'EUR')
+    result = prices_i18n.amount(result)
+    assert result == '€2.47'
+
+
+def test_template_filteramount_i18n_in_currency_amount_html_normalize():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices.in_currency(amount, 'EUR')
+    result = prices_i18n.amount(result, html=True, normalize=True)
+    assert result == '<span class="currency">€</span>2.47'
 
 
 # @mock.patch('django_prices_openexchangerates.models.cache')
