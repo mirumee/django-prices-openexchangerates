@@ -17,7 +17,7 @@ from django_prices_openexchangerates import exchange_currency
 
 converted_price = exchange_currency(Amount(10, currency='GBP'), 'EUR')
 print(converted_price)
-# Price('13.31313588062401085236264978', currency='EUR')
+# Amount('13.31313588062401085236264978', currency='EUR')
 ```
 
 Template filters can be used to convert currency and round amounts:
