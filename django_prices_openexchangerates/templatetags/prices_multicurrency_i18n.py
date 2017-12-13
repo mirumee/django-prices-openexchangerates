@@ -1,5 +1,7 @@
 from django.template import Library
 
+from django_prices.templatetags import prices_i18n
+
 from .. import exchange_currency
 
 register = Library()
@@ -18,3 +20,8 @@ def discount_amount_in_currency(discount, amount, currency):
     discount_amount = exchange_currency(discount.amount, to_currency=currency)
     discount.amount = discount_amount
     return (amount | discount) - amount
+
+
+@register.filter
+def amount(obj, html=False, normalize=False):
+    return prices_i18n.amount(obj, html=html, normalize=normalize)

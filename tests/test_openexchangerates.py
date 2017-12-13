@@ -138,21 +138,28 @@ def test_template_filter_amount_in_currency():
 def test_template_filter_amount_in_currency_amount():
     amount = Amount(Decimal('1.23456789'), currency='USD')
     result = rates_prices.in_currency(amount=amount, currency='EUR')
-    result = prices.amount(result)
+    result = rates_prices.amount(result)
     assert result == '2.47 <span class="currency">EUR</span>'
 
 
-def test_template_filteramount_i18n_in_currency_amount():
+def test_template_filter_amount_i18n_in_currency():
     amount = Amount(Decimal('1.23456789'), currency='USD')
-    result = rates_prices.in_currency(amount, 'EUR')
-    result = prices_i18n.amount(result)
+    result = rates_prices_i18n.in_currency(amount=amount, currency='EUR')
+    assert result == Amount(Decimal('2.47'), currency='EUR')
+
+
+def test_template_filter_amount_i18n_in_currency_amount():
+    amount = Amount(Decimal('1.23456789'), currency='USD')
+    result = rates_prices_i18n.in_currency(amount, 'EUR')
+    result = rates_prices_i18n.amount(result)
     assert result == '€2.47'
 
 
-def test_template_filteramount_i18n_in_currency_amount_html_normalize():
+def test_template_filter_amount_i18n_in_currency_amount_html_normalize():
     amount = Amount(Decimal('1.23456789'), currency='USD')
-    result = rates_prices.in_currency(amount, 'EUR')
-    result = prices_i18n.amount(result, html=True, normalize=True)
+    result = rates_prices_i18n.in_currency(amount, 'EUR')
+    result = rates_prices_i18n.amount(
+        result, html=True, normalize=True)
     assert result == '<span class="currency">€</span>2.47'
 
 
