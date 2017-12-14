@@ -23,10 +23,5 @@ def discount_amount_in_currency(discount, amount, currency):
 
 
 @register.filter
-def amount(obj, normalize=False):
-    return prices_i18n.amount(obj, normalize=normalize)
-
-
-@register.filter
-def amount_html(obj, normalize=False):
-    return prices_i18n.amount_html(obj, normalize=normalize)
+def amount(obj, format='text'):
+    return prices_i18n.amount(obj, format=format)

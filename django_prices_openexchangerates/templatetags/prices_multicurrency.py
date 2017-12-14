@@ -15,5 +15,5 @@ def in_currency(amount, currency, **kwargs):
 
 
 @register.filter
-def amount(obj, normalize=False):
-    return prices.amount(obj, normalize=normalize)
+def amount(obj):
+    return prices.amount(obj)
