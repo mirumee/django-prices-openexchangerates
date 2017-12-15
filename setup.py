@@ -2,8 +2,6 @@
 import os
 from setuptools import setup
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_settings')
-
 CLASSIFIERS = [
     'Environment :: Web Environment',
     'Intended Audience :: Developers',
@@ -13,6 +11,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     'Topic :: Software Development :: Libraries :: Application Frameworks',
@@ -24,7 +23,7 @@ setup(
     author_email='hello@mirumee.com',
     description='openexchangerates.org support for django-prices',
     license='BSD',
-    version='0.1.15',
+    version='1.0.0-beta',
     url='https://github.com/mirumee/django-prices-openexchangerates',
     packages=[
         'django_prices_openexchangerates',
@@ -34,9 +33,7 @@ setup(
         'django_prices_openexchangerates.templatetags'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django>=1.4', 'django-prices>=0.6.1', 'prices>=0.5.2'],
+    install_requires=['Django>=1.4', 'django-prices>=1.0.0-beta', 'prices>=1.0.1-beta'],
     platforms=['any'],
-    tests_require=['mock==1.0.1'],
-    test_suite='django_prices_openexchangerates.tests',
+    tests_require=['mock==1.0.1', 'pytest'],
     zip_safe=False)
-

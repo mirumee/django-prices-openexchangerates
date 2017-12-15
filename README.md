@@ -1,35 +1,31 @@
 # openexchangerates.org support for `django-prices`
 
 ```python
-from prices import Price
+from prices import Amount
 from django_prices_openexchangerates import exchange_currency
 
-converted_price = exchange_currency(Price(10, currency='USD'), 'EUR')
+converted_price = exchange_currency(Amount(10, currency='USD'), 'EUR')
 print(converted_price)
-# Price('8.84040', currency='EUR')
-print(converted_price.history)
-# (Price('10', currency='USD') | CurrencyConversion('USD', 'EUR', rate=Decimal('0.88404')))
+# Amount('8.84040', currency='EUR')
 ```
 
 It will also create additional steps if it cannot convert directly: 
 
 ```python
-from prices import Price
+from prices import Amount
 from django_prices_openexchangerates import exchange_currency
 
-converted_price = exchange_currency(Price(10, currency='GBP'), 'EUR')
+converted_price = exchange_currency(Amount(10, currency='GBP'), 'EUR')
 print(converted_price)
-# Price('13.31313588062401085236264978', currency='EUR')
-print(converted_price.history)
-# ((Price('10', currency='GBP') | CurrencyConversion('GBP', 'USD', rate=Decimal('1.507272590247946341095787173'))) | CurrencyConversion('USD', 'EUR', rate=Decimal('0.88326')))
+# Amount('13.31313588062401085236264978', currency='EUR')
 ```
 
-Templatetags can be used to convert currency and round amounts:
+Template filters can be used to convert currency and round amounts:
 
 ```html+django
 {% load prices_multicurrency %}
 
-<p>Price: {% gross_in_currency foo.price 'USD' %} ({% net_in_currency foo.price 'USD' %} + {% tax_in_currency foo.price 'USD' %} tax)</p>
+<p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price|in_currency:'USD'|amount }} tax)</p>
 ```
 
 When you install babel-django library, you can use i18n templatetags and display proper currency symbols
@@ -37,7 +33,7 @@ When you install babel-django library, you can use i18n templatetags and display
 ```html+django
 {% load prices_multicurrency_i18n %}
 
-<p>Price: {% gross_in_currency foo.price 'USD' %} ({% net_in_currency foo.price 'USD' %} + {% tax_in_currency foo.price 'USD' %} tax)</p>
+<p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price|in_currency:'USD'|amount }} tax)</p>
 ```
 
 Installation

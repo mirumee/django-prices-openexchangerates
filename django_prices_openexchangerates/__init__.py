@@ -4,7 +4,7 @@ import operator
 from decimal import Decimal
 
 from django.conf import settings
-from prices import History, Price, PriceModifier, PriceRange
+from prices import Amount, Price, PriceRange
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
@@ -13,7 +13,7 @@ CENTS = Decimal('0.01')
 default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExchangeRatesConfig'
 
 
-class CurrencyConversion(PriceModifier):
+class CurrencyConversion(object):
 
     '''
     Adds a currency conversion to the price
@@ -29,10 +29,9 @@ class CurrencyConversion(PriceModifier):
                 self.base_currency, self.to_currency, self.rate))
 
     def apply(self, price_obj):
-        history = History(price_obj, operator.__or__, self)
-        return Price(net=price_obj.net * self.rate,
-                     gross=price_obj.gross * self.rate,
-                     currency=self.to_currency, history=history)
+        if isinstance(price_obj, Amount):
+            return Amount(
+                price_obj.value * self.rate, currency=self.to_currency)
 
 
 def get_conversion_rate(currency):
