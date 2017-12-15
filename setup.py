@@ -23,7 +23,7 @@ setup(
     author_email='hello@mirumee.com',
     description='openexchangerates.org support for django-prices',
     license='BSD',
-    version='1.0.0-beta',
+    version='1.0.1-beta',
     url='https://github.com/mirumee/django-prices-openexchangerates',
     packages=[
         'django_prices_openexchangerates',
@@ -33,7 +33,7 @@ setup(
         'django_prices_openexchangerates.templatetags'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django>=1.4', 'django-prices>=1.0.0-beta', 'prices>=1.0.0-beta'],
+    install_requires=['Django>=1.4', 'django-prices>=1.0.1-beta', 'prices>=1.0.1-beta'],
     platforms=['any'],
     tests_require=['mock==1.0.1', 'pytest'],
     zip_safe=False)
