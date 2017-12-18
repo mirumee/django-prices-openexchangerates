@@ -34,9 +34,9 @@ class CurrencyConversion(object):
                 price_obj.value * self.rate, currency=self.to_currency)
         if isinstance(price_obj, Price):
             return Price(Amount(price_obj.net.value * self.rate,
-                         currency=self.to_currency),
+                                currency=self.to_currency),
                          Amount(price_obj.gross.value * self.rate,
-                         currency=self.to_currency))
+                                currency=self.to_currency))
 
 
 def get_conversion_rate(currency):
