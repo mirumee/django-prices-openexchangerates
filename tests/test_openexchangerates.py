@@ -6,7 +6,7 @@ from decimal import Decimal
 # import mock
 import pytest
 from prices import Amount, Price
-from django_prices.templatetags import prices, prices_i18n
+from django_prices_openexchangerates import CurrencyConversion
 from django_prices_openexchangerates.models import (
     ConversionRate, get_rates, CACHE_KEY, CACHE_TIME)
 from django_prices_openexchangerates.templatetags import (
@@ -165,3 +165,23 @@ def test_get_rates_force_update_cache(conversion_rates):
         rate.to_currency: rate for rate in conversion_rates}
     rates = get_rates(qs=conversion_rates, force_refresh=True)
     assert rates == expected_cache_content
+
+
+def test_currency_conversion_apply_for_amount():
+    conversion = CurrencyConversion(
+        base_currency='USD', to_currency='EUR', rate=2)
+    amount = Amount(10, 'USD')
+    amount_converted = conversion.apply(amount)
+    assert amount_converted.currency == 'EUR'
+    assert amount_converted.value == 20
+
+
+def test_currency_conversion_apply_for_price():
+    conversion = CurrencyConversion(
+        base_currency='USD', to_currency='EUR', rate=2)
+    price = Price(Amount(10, 'USD'), Amount(12, 'USD'))
+    price_converted = conversion.apply(price)
+    assert price_converted.net.currency == 'EUR'
+    assert price_converted.net.value == 20
+    assert price_converted.gross.currency == 'EUR'
+    assert price_converted.gross.value == 24
