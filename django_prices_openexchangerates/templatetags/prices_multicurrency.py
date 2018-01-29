@@ -8,10 +8,10 @@ register = Library()
 
 
 @register.filter
-def in_currency(amount, currency, **kwargs):
-    converted_amount = exchange_currency(amount, currency)
-    converted_amount = converted_amount.quantize('.01')
-    return converted_amount
+def in_currency(value, currency, **kwargs):
+    converted_value = exchange_currency(value, currency)
+    converted_value = converted_value.quantize('.01')
+    return converted_value
 
 
 @register.filter

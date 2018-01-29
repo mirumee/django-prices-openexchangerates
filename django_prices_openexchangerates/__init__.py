@@ -4,7 +4,7 @@ import operator
 from decimal import Decimal
 
 from django.conf import settings
-from prices import Amount, Price, PriceRange
+from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
@@ -16,7 +16,7 @@ default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExcha
 class CurrencyConversion(object):
 
     '''
-    Adds a currency conversion to the price
+    Adds a currency conversion to the Money or TaxedMoney
     '''
 
     def __init__(self, base_currency, to_currency, rate):
@@ -29,14 +29,14 @@ class CurrencyConversion(object):
                 self.base_currency, self.to_currency, self.rate))
 
     def apply(self, price_obj):
-        if isinstance(price_obj, Amount):
-            return Amount(
-                price_obj.value * self.rate, currency=self.to_currency)
-        if isinstance(price_obj, Price):
-            return Price(Amount(price_obj.net.value * self.rate,
-                                currency=self.to_currency),
-                         Amount(price_obj.gross.value * self.rate,
-                                currency=self.to_currency))
+        if isinstance(price_obj, Money):
+            return Money(
+                price_obj.amount * self.rate, currency=self.to_currency)
+        if isinstance(price_obj, TaxedMoney):
+            return TaxedMoney(Money(price_obj.net.amount * self.rate,
+                                    currency=self.to_currency),
+                              Money(price_obj.gross.amount * self.rate,
+                                    currency=self.to_currency))
 
 
 def get_conversion_rate(currency):
@@ -53,7 +53,7 @@ def get_conversion_rate(currency):
 
 def convert_price(price, to_currency, get_rate=get_conversion_rate):
     """
-    Converts Price object to specified currency.
+    Converts Money or TaxedMoney to specified currency.
     get_rate parameter is a callable that returns proper conversion rate
     """
     if price.currency == to_currency:
@@ -81,12 +81,16 @@ def convert_price(price, to_currency, get_rate=get_conversion_rate):
 
 def exchange_currency(price, to_currency, get_rate=get_conversion_rate):
     """
-    Exchanges Price or PriceRange to the specified currency
+    Exchanges Money, TaxedMoney or their ranges to the specified currency
     """
-    if isinstance(price, PriceRange):
-        return PriceRange(
-            exchange_currency(price.min_price, to_currency),
-            exchange_currency(price.max_price, to_currency))
+    if isinstance(price, MoneyRange):
+        return MoneyRange(
+            exchange_currency(price.start, to_currency, get_rate=get_rate),
+            exchange_currency(price.stop, to_currency, get_rate=get_rate))
+    if isinstance(price, TaxedMoneyRange):
+        return TaxedMoneyRange(
+            exchange_currency(price.start, to_currency, get_rate=get_rate),
+            exchange_currency(price.stop, to_currency, get_rate=get_rate))
     if price.currency != BASE_CURRENCY:
         # Convert to default currency
         price = convert_price(price, BASE_CURRENCY, get_rate=get_rate)

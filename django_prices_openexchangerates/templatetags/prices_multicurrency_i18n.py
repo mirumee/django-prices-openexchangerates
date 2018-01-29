@@ -8,18 +8,18 @@ register = Library()
 
 
 @register.filter
-def in_currency(amount, currency, **kwargs):
-    converted_amount = exchange_currency(amount, currency)
-    converted_amount = converted_amount.quantize('.01')
-    return converted_amount
+def in_currency(value, currency, **kwargs):
+    converted_value = exchange_currency(value, currency)
+    converted_value = converted_value.quantize('.01')
+    return converted_value
 
 
 @register.simple_tag
-def discount_amount_in_currency(discount, amount, currency):
-    amount = exchange_currency(amount, to_currency=currency)
+def discount_amount_in_currency(discount, value, currency):
+    value = exchange_currency(value, to_currency=currency)
     discount_amount = exchange_currency(discount.amount, to_currency=currency)
     discount.amount = discount_amount
-    return (amount | discount) - amount
+    return (value | discount) - value
 
 
 @register.filter

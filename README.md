@@ -1,24 +1,26 @@
 # openexchangerates.org support for `django-prices`
 
 ```python
-from prices import Amount
+from prices import Money
 from django_prices_openexchangerates import exchange_currency
 
-converted_price = exchange_currency(Amount(10, currency='USD'), 'EUR')
+converted_price = exchange_currency(Money(10, currency='USD'), 'EUR')
 print(converted_price)
-# Amount('8.84040', currency='EUR')
+# Money('8.84040', currency='EUR')
 ```
 
 It will also create additional steps if it cannot convert directly: 
 
 ```python
-from prices import Amount
+from prices import Money
 from django_prices_openexchangerates import exchange_currency
 
-converted_price = exchange_currency(Amount(10, currency='GBP'), 'EUR')
+converted_price = exchange_currency(Money(10, currency='GBP'), 'EUR')
 print(converted_price)
-# Amount('13.31313588062401085236264978', currency='EUR')
+# Money('13.31313588062401085236264978', currency='EUR')
 ```
+
+The `exchange_currency` supports `Money`, `TaxedMoney`, `MoneyRange` and `TaxedMoneyRange`.
 
 Template filters can be used to convert currency and round amounts:
 
