@@ -32,7 +32,8 @@ setup(
         'django_prices_openexchangerates.templatetags'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django>=1.4', 'django-prices>=1.0.0-beta3', 'prices>=1.0.0-beta3'],
+    install_requires=[
+        'Django<2.1.0', 'django-prices>=1.0.0-beta3', 'prices>=1.0.0-beta3'],
     platforms=['any'],
     tests_require=['mock==1.0.1', 'pytest'],
     zip_safe=False)
