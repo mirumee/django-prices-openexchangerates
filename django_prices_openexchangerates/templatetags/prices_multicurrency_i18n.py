@@ -15,11 +15,11 @@ def in_currency(value, currency, **kwargs):
 
 
 @register.simple_tag
-def discount_amount_in_currency(discount, value, currency):
-    value = exchange_currency(value, to_currency=currency)
-    discount_amount = exchange_currency(discount.amount, to_currency=currency)
-    discount.amount = discount_amount
-    return (value | discount) - value
+def discount_amount_in_currency(discount, price, currency):
+    discount_amount = discount(price)
+    price = exchange_currency(price, to_currency=currency)
+    discount_amount = exchange_currency(discount_amount, to_currency=currency)
+    return discount_amount - price
 
 
 @register.filter

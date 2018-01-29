@@ -1,11 +1,13 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import functools
 from decimal import Decimal
 
 # import mock
 import pytest
-from prices import Money, TaxedMoney, MoneyRange, TaxedMoneyRange
+from prices import (
+    Money, TaxedMoney, MoneyRange, TaxedMoneyRange, percentage_discount)
 from django_prices_openexchangerates import (
     CurrencyConversion, exchange_currency)
 from django_prices_openexchangerates.models import ConversionRate, get_rates
@@ -208,6 +210,14 @@ def test_template_filter_amount_i18n_in_currency_amount():
     result = rates_prices_i18n.in_currency(value, 'EUR')
     result = rates_prices_i18n.amount(result)
     assert result == '€2.47'
+
+
+def test_template_filter_discount_amount_in_currency():
+    value = TaxedMoney(Money(1, 'USD'), Money(5, 'USD'))
+    discount = functools.partial(percentage_discount, percentage=50)
+    result = rates_prices_i18n.discount_amount_in_currency(
+        discount, value, 'GBP')
+    assert result == TaxedMoney(Money(-4, 'GBP'), Money(-10, 'GBP'))
 
 
 def test_get_rates_caches_results(conversion_rates):
