@@ -15,7 +15,7 @@ default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExcha
 
 class CurrencyConversion:
     """
-    Adds a currency conversion to the Money, TaxedMoney or their ranges
+    Adds a currency conversion to the Money, TaxedMoney and their ranges
     """
 
     def __init__(self, base_currency, to_currency, rate):
@@ -77,8 +77,9 @@ def get_conversion_rate(from_currency, to_currency, get_rate):
 
 def exchange_currency(base, to_currency, get_rate=get_rate_from_db):
     """
-    Exchanges Money, TaxedMoney or their ranges to the specified currency.
-    get_rate parameter is a callable that returns proper conversion rate
+    Exchanges Money, TaxedMoney and their ranges to the specified currency.
+    get_rate parameter is a callable taking single argument (target currency)
+    that returns proper conversion rate
     """
     if base.currency == to_currency:
         return base
@@ -91,4 +92,21 @@ def exchange_currency(base, to_currency, get_rate=get_rate_from_db):
         base_currency=base.currency,
         to_currency=to_currency,
         rate=conversion_rate)
-    return conversion.apply(base)
+
+    if isinstance(base, Money):
+        return Money(base.amount * conversion_rate, currency=to_currency)
+    if isinstance(base, MoneyRange):
+        return MoneyRange(exchange_currency(base.start, to_currency,
+                                            get_rate=get_rate),
+                          exchange_currency(base.stop, to_currency,
+                                            get_rate=get_rate))
+    if isinstance(base, TaxedMoney):
+        return TaxedMoney(Money(base.net.amount * conversion_rate,
+                                currency=to_currency),
+                          Money(base.gross.amount * conversion_rate,
+                                currency=to_currency))
+    if isinstance(base, TaxedMoneyRange):
+        return TaxedMoneyRange(exchange_currency(base.start, to_currency,
+                                                 get_rate=get_rate),
+                               exchange_currency(base.stop, to_currency,
+                                                 get_rate=get_rate))

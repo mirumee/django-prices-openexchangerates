@@ -8,8 +8,7 @@ from decimal import Decimal
 import pytest
 from prices import (
     Money, TaxedMoney, MoneyRange, TaxedMoneyRange, percentage_discount)
-from django_prices_openexchangerates import (
-    CurrencyConversion, exchange_currency)
+from django_prices_openexchangerates import exchange_currency
 from django_prices_openexchangerates.models import ConversionRate, get_rates
 from django_prices_openexchangerates.templatetags import (
     prices_multicurrency as rates_prices,
@@ -175,17 +174,6 @@ def test_exchange_currency_for_taxed_money_range_uses_passed_dict():
     assert value_converted.stop.gross.amount == 48
 
 
-def test_repr():
-    currency_base = 'USD'
-    to_currency = 'EUR'
-    modifier = CurrencyConversion(
-        base_currency=currency_base, to_currency=to_currency,
-        rate=Decimal('0.5'))
-    expected = "CurrencyConversion(%r, %r, rate=Decimal('0.5'))" % (
-        currency_base, to_currency)
-    assert repr(modifier) == expected
-
-
 def test_template_filter_money_in_currency():
     value = Money(Decimal('1.23456789'), currency='USD')
     result = rates_prices.in_currency(value, currency='EUR')
@@ -230,24 +218,3 @@ def test_get_rates_force_update_cache(conversion_rates):
         rate.to_currency: rate for rate in conversion_rates}
     rates = get_rates(qs=conversion_rates, force_refresh=True)
     assert rates == expected_cache_content
-
-
-def test_currency_conversion_apply_to_money():
-    conversion = CurrencyConversion(
-        base_currency='USD', to_currency='EUR', rate=2)
-    value = Money(10, 'USD')
-    value_converted = conversion.apply(value)
-    assert value_converted.currency == 'EUR'
-    assert value_converted.amount == 20
-
-
-def test_currency_conversion_apply_to_taxed_money():
-    conversion = CurrencyConversion(
-        base_currency='USD', to_currency='EUR', rate=2)
-    value = TaxedMoney(Money(10, 'USD'), Money(12, 'USD'))
-    value_converted = conversion.apply(value)
-    assert value_converted.currency == 'EUR'
-    assert value_converted.net.currency == 'EUR'
-    assert value_converted.net.amount == 20
-    assert value_converted.gross.currency == 'EUR'
-    assert value_converted.gross.amount == 24
