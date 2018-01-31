@@ -6,38 +6,7 @@ from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
-CENTS = Decimal('0.01')
-
 default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExchangeRatesConfig'
-
-
-class CurrencyConversion:
-    """
-    Adds a currency conversion to the Money, TaxedMoney and their ranges
-    """
-
-    def __init__(self, base_currency, to_currency, rate):
-        self.base_currency = base_currency
-        self.to_currency = to_currency
-        self.rate = rate
-
-    def __repr__(self):
-        return ('CurrencyConversion(%r, %r, rate=%r)' % (
-                self.base_currency, self.to_currency, self.rate))
-
-    def apply(self, base):
-        if isinstance(base, Money):
-            return Money(base.amount * self.rate, currency=self.to_currency)
-        if isinstance(base, MoneyRange):
-            return MoneyRange(self.apply(base.start), self.apply(base.stop))
-        if isinstance(base, TaxedMoney):
-            return TaxedMoney(Money(base.net.amount * self.rate,
-                                    currency=self.to_currency),
-                              Money(base.gross.amount * self.rate,
-                                    currency=self.to_currency))
-        if isinstance(base, TaxedMoneyRange):
-            return TaxedMoneyRange(self.apply(base.start),
-                                   self.apply(base.stop))
 
 
 def get_rate_from_db(currency):
@@ -86,10 +55,6 @@ def exchange_currency(base, to_currency, get_rate=get_rate_from_db):
         base = exchange_currency(base, BASE_CURRENCY, get_rate=get_rate)
 
     conversion_rate = get_conversion_rate(base.currency, to_currency, get_rate)
-    conversion = CurrencyConversion(
-        base_currency=base.currency,
-        to_currency=to_currency,
-        rate=conversion_rate)
 
     if isinstance(base, Money):
         return Money(base.amount * conversion_rate, currency=to_currency)
