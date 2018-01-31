@@ -1,15 +1,20 @@
 import operator
 from decimal import Decimal
+from typing import Callable, Union
 
 from django.conf import settings
 from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
+
+Conversion = Union[float, int, Decimal]
+ConversionRateGetter = Callable[[str], Conversion]
+Exchangeable = Union[Money, MoneyRange, TaxedMoney, TaxedMoneyRange]
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 
 default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExchangeRatesConfig'
 
 
-def get_rate_from_db(currency):
+def get_rate_from_db(currency: str) -> Conversion:
     """
     Fetch currency conversion rate from the database
     """
@@ -21,7 +26,9 @@ def get_rate_from_db(currency):
     return rate.rate
 
 
-def get_conversion_rate(from_currency, to_currency, get_rate):
+def get_conversion_rate(
+        from_currency: str, to_currency: str,
+        get_rate: ConversionRateGetter) -> Conversion:
     """
     Get conversion rate to use in exchange
     """
@@ -42,7 +49,9 @@ def get_conversion_rate(from_currency, to_currency, get_rate):
     return conversion_rate
 
 
-def exchange_currency(base, to_currency, get_rate=get_rate_from_db):
+def exchange_currency(
+        base: Exchangeable, to_currency: str,
+        get_rate=get_rate_from_db) -> Exchangeable:
     """
     Exchanges Money, TaxedMoney and their ranges to the specified currency.
     get_rate parameter is a callable taking single argument (target currency)
