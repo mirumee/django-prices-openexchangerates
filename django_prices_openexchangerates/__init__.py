@@ -14,10 +14,9 @@ default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExcha
 
 
 class CurrencyConversion:
-
-    '''
-    Adds a currency conversion to the Money or TaxedMoney
-    '''
+    """
+    Adds a currency conversion to the Money, TaxedMoney or their ranges
+    """
 
     def __init__(self, base_currency, to_currency, rate):
         self.base_currency = base_currency
@@ -30,16 +29,20 @@ class CurrencyConversion:
 
     def apply(self, base):
         if isinstance(base, Money):
-            return Money(base.amount * self.rate,
-                         currency=self.to_currency)
+            return Money(base.amount * self.rate, currency=self.to_currency)
+        if isinstance(base, MoneyRange):
+            return MoneyRange(self.apply(base.start), self.apply(base.stop))
         if isinstance(base, TaxedMoney):
             return TaxedMoney(Money(base.net.amount * self.rate,
                                     currency=self.to_currency),
                               Money(base.gross.amount * self.rate,
                                     currency=self.to_currency))
+        if isinstance(base, TaxedMoneyRange):
+            return TaxedMoneyRange(self.apply(base.start),
+                                   self.apply(base.stop))
 
 
-def get_conversion_rate(currency):
+def get_rate_from_db(currency):
     """
     Fetch currency conversion rate from the database
     """
@@ -51,18 +54,15 @@ def get_conversion_rate(currency):
     return rate.rate
 
 
-def convert_base(base, to_currency, get_rate=get_conversion_rate):
+def get_conversion_rate(from_currency, to_currency, get_rate):
     """
-    Converts Money or TaxedMoney to specified currency.
-    get_rate parameter is a callable that returns proper conversion rate
+    Get conversion rate to use in exchange
     """
-    if base.currency == to_currency:
-        return base
     reverse_rate = False
     if to_currency == BASE_CURRENCY:
         # Fetch exchange rate for base currency and use 1 / rate
         # for conversion
-        rate_currency = base.currency
+        rate_currency = from_currency
         reverse_rate = True
     else:
         rate_currency = to_currency
@@ -72,26 +72,23 @@ def convert_base(base, to_currency, get_rate=get_conversion_rate):
         conversion_rate = 1 / rate
     else:
         conversion_rate = rate
+    return conversion_rate
+
+
+def exchange_currency(base, to_currency, get_rate=get_rate_from_db):
+    """
+    Exchanges Money, TaxedMoney or their ranges to the specified currency.
+    get_rate parameter is a callable that returns proper conversion rate
+    """
+    if base.currency == to_currency:
+        return base
+    if base.currency != BASE_CURRENCY and to_currency != BASE_CURRENCY:
+        # Exchange to base currency first
+        base = exchange_currency(base, BASE_CURRENCY, get_rate=get_rate)
+
+    conversion_rate = get_conversion_rate(base.currency, to_currency, get_rate)
     conversion = CurrencyConversion(
         base_currency=base.currency,
         to_currency=to_currency,
         rate=conversion_rate)
     return conversion.apply(base)
-
-
-def exchange_currency(base, to_currency, get_rate=get_conversion_rate):
-    """
-    Exchanges Money, TaxedMoney or their ranges to the specified currency
-    """
-    if isinstance(base, MoneyRange):
-        return MoneyRange(
-            exchange_currency(base.start, to_currency, get_rate=get_rate),
-            exchange_currency(base.stop, to_currency, get_rate=get_rate))
-    if isinstance(base, TaxedMoneyRange):
-        return TaxedMoneyRange(
-            exchange_currency(base.start, to_currency, get_rate=get_rate),
-            exchange_currency(base.stop, to_currency, get_rate=get_rate))
-    if base.currency != BASE_CURRENCY:
-        # Convert to default currency
-        base = convert_base(base, BASE_CURRENCY, get_rate=get_rate)
-    return convert_base(base, to_currency, get_rate=get_rate)
