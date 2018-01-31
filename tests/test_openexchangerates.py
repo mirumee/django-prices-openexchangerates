@@ -216,7 +216,7 @@ def test_template_filter_discount_amount_in_currency():
     value = TaxedMoney(Money(1, 'USD'), Money(5, 'USD'))
     discount = functools.partial(percentage_discount, percentage=50)
     result = rates_prices_i18n.discount_amount_in_currency(
-        discount, value, 'GBP')
+        value, discount, 'GBP')
     assert result == TaxedMoney(Money(-4, 'GBP'), Money(-10, 'GBP'))
 
 
