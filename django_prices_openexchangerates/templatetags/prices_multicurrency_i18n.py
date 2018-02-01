@@ -1,18 +1,18 @@
-from typing import Callable
+from typing import Callable, TypeVar
 
 from django.template import Library
 from django_prices.templatetags import prices_i18n
-from prices import Money
+from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
-from .. import Exchangeable, exchange_currency
+from .. import exchange_currency
 
-Discount = Callable[[Exchangeable], Exchangeable]
+T = TypeVar('T', Money, MoneyRange, TaxedMoney, TaxedMoneyRange)
 
 register = Library()
 
 
 @register.filter
-def in_currency(base: Exchangeable, currency: str, **kwargs) -> Exchangeable:
+def in_currency(base: T, currency: str) -> T:
     converted_base = exchange_currency(base, currency)
     converted_base = converted_base.quantize('.01')
     return converted_base
@@ -20,7 +20,7 @@ def in_currency(base: Exchangeable, currency: str, **kwargs) -> Exchangeable:
 
 @register.simple_tag
 def discount_amount_in_currency(
-        base: Exchangeable, discount: Discount, currency: str) -> Exchangeable:
+    base: T, discount: Callable[[T], T], currency: str) -> T:
     discount_amount = discount(base)
     converted_base = exchange_currency(base, to_currency=currency)
     discount_amount = exchange_currency(discount_amount, to_currency=currency)
