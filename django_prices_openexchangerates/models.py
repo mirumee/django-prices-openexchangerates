@@ -71,7 +71,8 @@ class ConversionRate(models.Model):
         return '1 %s = %.04f %s' % (
             self.base_currency, self.rate, self.to_currency)
 
-    def __repr__(self):  # noqa
-        return (
-            'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)' % (
-                self.pk, self.base_currency, self.to_currency, self.rate))
+    def __repr___(self):  # noqa
+        format_template = (
+            'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)')
+        return format_template % (
+            self.pk, self.base_currency, self.to_currency, self.rate)
