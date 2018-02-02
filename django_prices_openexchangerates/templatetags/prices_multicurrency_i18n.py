@@ -20,7 +20,7 @@ def in_currency(base: T, currency: str) -> T:
 
 @register.simple_tag
 def discount_amount_in_currency(
-    base: T, discount: Callable[[T], T], currency: str) -> T:
+        base: T, discount: Callable[[T], T], currency: str) -> T:
     discount_amount = discount(base)
     converted_base = exchange_currency(base, to_currency=currency)
     discount_amount = exchange_currency(discount_amount, to_currency=currency)

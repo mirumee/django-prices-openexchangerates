@@ -137,8 +137,9 @@ def test_exchange_currency_for_money_range_uses_passed_dict():
 
 
 def test_exchange_currency_for_taxed_money_range():
-    value = TaxedMoneyRange(TaxedMoney(Money(10, 'USD'), Money(12, 'USD')),
-                            TaxedMoney(Money(20, 'USD'), Money(24, 'USD')))
+    value = TaxedMoneyRange(
+        TaxedMoney(Money(10, 'USD'), Money(12, 'USD')),
+        TaxedMoney(Money(20, 'USD'), Money(24, 'USD')))
 
     value_converted = exchange_currency(value, 'GBP')
     assert value_converted.currency == 'GBP'
@@ -151,8 +152,9 @@ def test_exchange_currency_for_taxed_money_range():
 
 
 def test_exchange_currency_for_taxed_money_range_uses_passed_dict():
-    value = TaxedMoneyRange(TaxedMoney(Money(10, 'USD'), Money(12, 'USD')),
-                            TaxedMoney(Money(20, 'USD'), Money(24, 'USD')))
+    value = TaxedMoneyRange(
+        TaxedMoney(Money(10, 'USD'), Money(12, 'USD')),
+        TaxedMoney(Money(20, 'USD'), Money(24, 'USD')))
 
     def custom_get_rate(currency):
         data = {'GBP': Decimal(2)}
@@ -170,6 +172,15 @@ def test_exchange_currency_for_taxed_money_range_uses_passed_dict():
     assert value_converted.stop.net.amount == 40
     assert value_converted.stop.gross.currency == 'GBP'
     assert value_converted.stop.gross.amount == 48
+
+
+def test_exchange_currency_raises_for_nonsupported_type():
+    with pytest.raises(TypeError):
+        class PseudoMoneyType:
+            currency = 'USD'
+        converted_value = exchange_currency(PseudoMoneyType(), 'GBP')
+    with pytest.raises(AttributeError):
+        converted_value = exchange_currency('str', 'GBP')
 
 
 def test_template_filter_money_in_currency():
