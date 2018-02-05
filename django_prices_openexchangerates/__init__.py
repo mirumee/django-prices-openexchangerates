@@ -5,7 +5,6 @@ from typing import Callable, TypeVar, Union
 from django.conf import settings
 from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
-Conversion = Union[int, Decimal]
 T = TypeVar('T', Money, MoneyRange, TaxedMoney, TaxedMoneyRange)
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
@@ -13,7 +12,7 @@ BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
 default_app_config = 'django_prices_openexchangerates.apps.DjangoPricesOpenExchangeRatesConfig'
 
 
-def get_rate_from_db(currency: str) -> Conversion:
+def get_rate_from_db(currency: str) -> Decimal:
     """
     Fetch currency conversion rate from the database
     """
@@ -27,7 +26,7 @@ def get_rate_from_db(currency: str) -> Conversion:
 
 def get_conversion_rate(
         from_currency: str, to_currency: str,
-        get_rate: Callable[[str], Conversion]) -> Conversion:
+        get_rate: Callable[[str], Decimal]) -> Decimal:
     """
     Get conversion rate to use in exchange
     """
@@ -41,7 +40,7 @@ def get_conversion_rate(
     rate = get_rate(rate_currency)
 
     if reverse_rate:
-        conversion_rate = Decimal(1) / rate  # type: Conversion
+        conversion_rate = Decimal(1) / rate
     else:
         conversion_rate = rate
     return conversion_rate
@@ -70,8 +69,8 @@ def exchange_currency(
             exchange_currency(base.stop, to_currency, get_rate=get_rate))
     if isinstance(base, TaxedMoney):
         return TaxedMoney(
-            Money(base.net.amount * conversion_rate, currency=to_currency),
-            Money(base.gross.amount * conversion_rate, currency=to_currency))
+            exchange_currency(base.net, to_currency, get_rate=get_rate),
+            exchange_currency(base.gross, to_currency, get_rate=get_rate))
     if isinstance(base, TaxedMoneyRange):
         return TaxedMoneyRange(
             exchange_currency(base.start, to_currency, get_rate=get_rate),

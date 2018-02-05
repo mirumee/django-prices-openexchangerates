@@ -25,8 +25,3 @@ def discount_amount_in_currency(
     converted_base = exchange_currency(base, to_currency=currency)
     discount_amount = exchange_currency(discount_amount, to_currency=currency)
     return discount_amount - converted_base
-
-
-@register.filter
-def amount(base: Money, format='text') -> str:
-    return prices_i18n.amount(base, format=format)

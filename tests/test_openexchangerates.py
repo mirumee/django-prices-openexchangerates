@@ -192,9 +192,8 @@ def test_template_filter_money_in_currency():
 def test_template_filter_money_in_currency_amount():
     value = Money(Decimal('1.23456789'), currency='USD')
     result = rates_prices.in_currency(value, currency='EUR')
-    result = rates_prices.amount(result)
-    assert result == '2.47 <span class="currency">EUR</span>'
-
+    assert result == Money('2.47', 'EUR')
+    
 
 def test_template_filter_amount_i18n_in_currency():
     value = Money(Decimal('1.23456789'), currency='USD')
@@ -205,8 +204,7 @@ def test_template_filter_amount_i18n_in_currency():
 def test_template_filter_amount_i18n_in_currency_amount():
     value = Money(Decimal('1.23456789'), currency='USD')
     result = rates_prices_i18n.in_currency(value, 'EUR')
-    result = rates_prices_i18n.amount(result)
-    assert result == '€2.47'
+    assert result == Money('2.47', 'EUR')
 
 
 def test_template_filter_discount_amount_in_currency():
