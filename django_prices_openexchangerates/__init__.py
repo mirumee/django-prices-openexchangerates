@@ -1,6 +1,6 @@
 import operator
 from decimal import Decimal
-from typing import Callable, TypeVar, Union
+from typing import Callable, TypeVar
 
 from django.conf import settings
 from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
@@ -24,9 +24,7 @@ def get_rate_from_db(currency: str) -> Decimal:
     return rate.rate
 
 
-def get_conversion_rate(
-        from_currency: str, to_currency: str,
-        get_rate: Callable[[str], Decimal]) -> Decimal:
+def get_conversion_rate(from_currency: str, to_currency: str) -> Decimal:
     """
     Get conversion rate to use in exchange
     """
@@ -37,7 +35,7 @@ def get_conversion_rate(
         reverse_rate = True
     else:
         rate_currency = to_currency
-    rate = get_rate(rate_currency)
+    rate = get_rate_from_db(rate_currency)
 
     if reverse_rate:
         conversion_rate = Decimal(1) / rate
@@ -47,7 +45,7 @@ def get_conversion_rate(
 
 
 def exchange_currency(
-        base: T, to_currency: str, get_rate=get_rate_from_db) -> T:
+        base: T, to_currency: str, *, conversion_rate: Decimal=None) -> T:
     """
     Exchanges Money, TaxedMoney and their ranges to the specified currency.
     get_rate parameter is a callable taking single argument (target currency)
@@ -57,24 +55,31 @@ def exchange_currency(
         return base
     if base.currency != BASE_CURRENCY and to_currency != BASE_CURRENCY:
         # Exchange to base currency first
-        base = exchange_currency(base, BASE_CURRENCY, get_rate=get_rate)
+        base = exchange_currency(base, BASE_CURRENCY)
 
-    conversion_rate = get_conversion_rate(base.currency, to_currency, get_rate)
+    if conversion_rate is None:
+        conversion_rate = get_conversion_rate(base.currency, to_currency)
 
     if isinstance(base, Money):
         return Money(base.amount * conversion_rate, currency=to_currency)
     if isinstance(base, MoneyRange):
         return MoneyRange(
-            exchange_currency(base.start, to_currency, get_rate=get_rate),
-            exchange_currency(base.stop, to_currency, get_rate=get_rate))
+            exchange_currency(
+                base.start, to_currency, conversion_rate=conversion_rate),
+            exchange_currency(
+                base.stop, to_currency, conversion_rate=conversion_rate))
     if isinstance(base, TaxedMoney):
         return TaxedMoney(
-            exchange_currency(base.net, to_currency, get_rate=get_rate),
-            exchange_currency(base.gross, to_currency, get_rate=get_rate))
+            exchange_currency(
+                base.net, to_currency, conversion_rate=conversion_rate),
+            exchange_currency(
+                base.gross, to_currency, conversion_rate=conversion_rate))
     if isinstance(base, TaxedMoneyRange):
         return TaxedMoneyRange(
-            exchange_currency(base.start, to_currency, get_rate=get_rate),
-            exchange_currency(base.stop, to_currency, get_rate=get_rate))
-            
+            exchange_currency(
+                base.start, to_currency, conversion_rate=conversion_rate),
+            exchange_currency(
+                base.stop, to_currency, conversion_rate=conversion_rate))
+
     # base.currency was set but we don't know how to exchange given type
     raise TypeError('Unknown base for exchange_currency: %r' % (base,))

@@ -8,9 +8,7 @@ from prices import (
     Money, TaxedMoney, MoneyRange, TaxedMoneyRange, percentage_discount)
 from django_prices_openexchangerates import exchange_currency
 from django_prices_openexchangerates.models import ConversionRate, get_rates
-from django_prices_openexchangerates.templatetags import (
-    prices_multicurrency as rates_prices,
-    prices_multicurrency_i18n as rates_prices_i18n)
+from django_prices_openexchangerates.templatetags import prices_multicurrency
 
 
 RATES = {
@@ -35,39 +33,21 @@ def conversion_rates(db):
 
 
 def test_the_same_currency_uses_no_conversion():
-    value = Money(10, currency='USD')
-    converted_value = exchange_currency(value, 'USD')
+    value = Money(10, currency='EUR')
+    converted_value = exchange_currency(value, 'EUR')
     assert converted_value == value
 
 
 def test_base_currency_to_another():
     value = Money(10, currency='USD')
     converted_value = exchange_currency(value, 'EUR')
-    assert converted_value.currency == 'EUR'
-    assert converted_value is not None
+    assert converted_value == Money(20, currency='EUR')
 
 
-def test_convert_another_to_base_currency():
-    value = Money(10, currency='EUR')
+def test_convert_other_currency_to_base_currency():
+    value = Money(20, currency='EUR')
     converted_value = exchange_currency(value, 'USD')
-    assert converted_value.currency == 'USD'
-
-
-def test_convert_two_non_base_currencies():
-    value = Money(10, currency='EUR')
-    converted_value = exchange_currency(value, 'GBP')
-    assert converted_value.currency == 'GBP'
-
-
-def test_convert_value_uses_passed_dict():
-    value = Money(10, currency='USD')
-
-    def custom_get_rate(currency):
-        data = {'GBP': Decimal(5)}
-        return data[currency]
-
-    converted_value = exchange_currency(value, 'GBP', get_rate=custom_get_rate)
-    assert converted_value.currency == 'GBP'
+    assert converted_value == Money(10, currency='USD')
 
 
 def test_two_base_currencies_the_same_currency_uses_no_conversion():
@@ -76,40 +56,28 @@ def test_two_base_currencies_the_same_currency_uses_no_conversion():
     assert converted_value == value
 
 
-def test_two_base_currencies_base_currency_to_another():
-    value = Money(10, currency='USD')
-    converted_value = exchange_currency(value, 'EUR')
-    assert converted_value.currency == 'EUR'
-    assert converted_value is not None
-
-
-def test_two_base_currencies_convert_another_to_base_currency():
-    value = Money(10, currency='EUR')
-    converted_value = exchange_currency(value, 'USD')
-    assert converted_value.currency == 'USD'
-
-
-def test_two_base_currencies_convert_two_non_base_currencies():
-    value = Money(10, currency='EUR')
+def test_convert_two_non_base_currencies():
+    value = Money(20, currency='EUR')
     converted_value = exchange_currency(value, 'GBP')
-    assert converted_value.currency == 'GBP'
+    assert converted_value == Money(40, currency='GBP')
 
 
-def test_two_base_currencies_convert_price_uses_passed_dict():
+def test_exchange_currency_uses_passed_conversion_rate():
     value = Money(10, currency='USD')
+    custom_rate = Decimal(5)
 
-    def custom_get_rate(currency):
-        data = {'GBP': Decimal(5)}
-        return data[currency]
-
-    converted_value = exchange_currency(value, 'GBP', get_rate=custom_get_rate)
-    assert converted_value.currency == 'GBP'
+    converted_value = exchange_currency(
+        value, 'GBP', conversion_rate=custom_rate)
+    assert converted_value == Money(50, currency='GBP')
 
 
-def test_two_base_currencies_convert_price_uses_db_when_dict_not_passed():
+def test_two_base_currencies_convert_price_uses_passed_conversion_rate():
     value = Money(10, currency='USD')
-    converted_value = exchange_currency(value, 'GBP')
-    assert converted_value.currency == 'GBP'
+    custom_rate = Decimal('4.2')
+
+    converted_value = exchange_currency(
+        value, 'GBP', conversion_rate=custom_rate)
+    assert converted_value == Money(42, 'GBP')
 
 
 def test_exchange_currency_for_money_range():
@@ -117,23 +85,39 @@ def test_exchange_currency_for_money_range():
 
     value_converted = exchange_currency(value, 'GBP')
     assert value_converted.currency == 'GBP'
-    assert value_converted.start.currency == 'GBP'
-    assert value_converted.stop.currency == 'GBP'
+    assert value_converted.start == Money(40, currency='GBP')
+    assert value_converted.stop == Money(60, currency='GBP')
 
 
-def test_exchange_currency_for_money_range_uses_passed_dict():
+def test_exchange_currency_for_money_range_uses_passed_conversion_rate():
     value = MoneyRange(Money(10, 'USD'), Money(15, 'USD'))
+    custom_rate = Decimal(2)
 
-    def custom_get_rate(currency):
-        data = {'GBP': Decimal(2)}
-        return data[currency]
-
-    value_converted = exchange_currency(value, 'GBP', get_rate=custom_get_rate)
+    value_converted = exchange_currency(
+        value, 'GBP', conversion_rate=custom_rate)
     assert value_converted.currency == 'GBP'
-    assert value_converted.start.currency == 'GBP'
-    assert value_converted.start.amount == 20
-    assert value_converted.stop.currency == 'GBP'
-    assert value_converted.stop.amount == 30
+    assert value_converted.start == Money(20, currency='GBP')
+    assert value_converted.stop == Money(30, currency='GBP')
+
+
+def test_exchange_currency_for_taxed_money():
+    value = TaxedMoney(Money(10, 'USD'), Money(12, 'USD'))
+
+    value_converted = exchange_currency(value, 'GBP')
+    assert value_converted.currency == 'GBP'
+    assert value_converted.net == Money(40, currency='GBP')
+    assert value_converted.gross == Money(48, currency='GBP')
+
+
+def test_exchange_currency_for_taxed_money_uses_passed_conversion_rate():
+    value = TaxedMoney(Money(10, 'USD'), Money(12, 'USD'))
+    custom_rate = Decimal(2)
+
+    value_converted = exchange_currency(
+        value, 'GBP', conversion_rate=custom_rate)
+    assert value_converted.currency == 'GBP'
+    assert value_converted.net == Money(20, currency='GBP')
+    assert value_converted.gross == Money(24, currency='GBP')
 
 
 def test_exchange_currency_for_taxed_money_range():
@@ -144,23 +128,21 @@ def test_exchange_currency_for_taxed_money_range():
     value_converted = exchange_currency(value, 'GBP')
     assert value_converted.currency == 'GBP'
     assert value_converted.start.currency == 'GBP'
-    assert value_converted.start.net.currency == 'GBP'
-    assert value_converted.start.gross.currency == 'GBP'
+    assert value_converted.start.net == Money(40, currency='GBP')
+    assert value_converted.start.gross == Money(48, currency='GBP')
     assert value_converted.stop.currency == 'GBP'
-    assert value_converted.stop.net.currency == 'GBP'
-    assert value_converted.stop.gross.currency == 'GBP'
+    assert value_converted.stop.net == Money(80, currency='GBP')
+    assert value_converted.stop.gross == Money(96, currency='GBP')
 
 
-def test_exchange_currency_for_taxed_money_range_uses_passed_dict():
+def test_exchange_currency_for_taxed_money_range_uses_passed_conversion_rate():
     value = TaxedMoneyRange(
         TaxedMoney(Money(10, 'USD'), Money(12, 'USD')),
         TaxedMoney(Money(20, 'USD'), Money(24, 'USD')))
+    custom_rate = Decimal(2)
 
-    def custom_get_rate(currency):
-        data = {'GBP': Decimal(2)}
-        return data[currency]
-
-    value_converted = exchange_currency(value, 'GBP', get_rate=custom_get_rate)
+    value_converted = exchange_currency(
+        value, 'GBP', conversion_rate=custom_rate)
     assert value_converted.currency == 'GBP'
     assert value_converted.start.currency == 'GBP'
     assert value_converted.start.net.currency == 'GBP'
@@ -185,34 +167,8 @@ def test_exchange_currency_raises_for_nonsupported_type():
 
 def test_template_filter_money_in_currency():
     value = Money(Decimal('1.23456789'), currency='USD')
-    result = rates_prices.in_currency(value, currency='EUR')
-    assert result == Money(Decimal('2.47'), currency='EUR')
-
-
-def test_template_filter_money_in_currency_amount():
-    value = Money(Decimal('1.23456789'), currency='USD')
-    result = rates_prices.in_currency(value, currency='EUR')
+    result = prices_multicurrency.in_currency(value, currency='EUR')
     assert result == Money('2.47', 'EUR')
-    
-
-def test_template_filter_amount_i18n_in_currency():
-    value = Money(Decimal('1.23456789'), currency='USD')
-    result = rates_prices_i18n.in_currency(value, currency='EUR')
-    assert result == Money(Decimal('2.47'), currency='EUR')
-
-
-def test_template_filter_amount_i18n_in_currency_amount():
-    value = Money(Decimal('1.23456789'), currency='USD')
-    result = rates_prices_i18n.in_currency(value, 'EUR')
-    assert result == Money('2.47', 'EUR')
-
-
-def test_template_filter_discount_amount_in_currency():
-    value = TaxedMoney(Money(1, 'USD'), Money(5, 'USD'))
-    discount = functools.partial(percentage_discount, percentage=50)
-    result = rates_prices_i18n.discount_amount_in_currency(
-        value, discount, 'GBP')
-    assert result == TaxedMoney(Money(-4, 'GBP'), Money(-10, 'GBP'))
 
 
 def test_get_rates_caches_results(conversion_rates):

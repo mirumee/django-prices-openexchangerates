@@ -51,7 +51,7 @@ def create_conversion_dates():
         try:
             conversion_rate, _ = ConversionRate.objects.get_or_create(
                 to_currency=currency, rate=rate)
-        except Exception as e:
+        except Exception:
             logger.exception(
                 'Unable to create ConversionRate',
                 extra={'currency': currency, 'rate': rate})

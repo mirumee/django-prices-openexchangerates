@@ -30,13 +30,6 @@ Template filters can be used to convert currency and round amounts:
 <p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price|in_currency:'USD'|amount }} tax)</p>
 ```
 
-When you install babel-django library, you can use i18n templatetags and display proper currency symbols
-
-```html+django
-{% load prices_multicurrency_i18n %}
-
-<p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price|in_currency:'USD'|amount }} tax)</p>
-```
 
 Installation
 ==============
