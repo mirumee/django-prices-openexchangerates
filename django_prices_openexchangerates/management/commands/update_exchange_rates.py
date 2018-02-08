@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.core.management.base import BaseCommand
 
 from ...tasks import update_conversion_rates, create_conversion_dates

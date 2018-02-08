@@ -1,19 +1,16 @@
-from django.template import Library
+from typing import TypeVar
 
-from django_prices.templatetags import prices
+from django.template import Library
+from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
 from .. import exchange_currency
+
+T = TypeVar('T', Money, MoneyRange, TaxedMoney, TaxedMoneyRange)
 
 register = Library()
 
 
 @register.filter
-def in_currency(amount, currency, **kwargs):
-    converted_amount = exchange_currency(amount, currency)
-    converted_amount = converted_amount.quantize('.01')
-    return converted_amount
-
-
-@register.filter
-def amount(obj):
-    return prices.amount(obj)
+def in_currency(base: T, currency: str) -> T:
+    converted_base = exchange_currency(base, currency)
+    return converted_base.quantize()

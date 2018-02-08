@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from decimal import Decimal
 
 from django.conf import settings
@@ -12,8 +10,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from .currencies import CURRENCIES
 
 BASE_CURRENCY = getattr(settings, 'OPENEXCHANGERATES_BASE_CURRENCY', 'USD')
-CACHE_KEY = getattr(settings, 'OPENEXCHANGERATES_CACHE_KEY',
-                    'openexchangerates_conversion_rates')
+CACHE_KEY = getattr(
+    settings, 'OPENEXCHANGERATES_CACHE_KEY',
+    'openexchangerates_conversion_rates')
 CACHE_TIME = getattr(settings, 'OPENEXCHANGERATES_CACHE_TTL', 60*60)
 
 
@@ -69,10 +68,11 @@ class ConversionRate(models.Model):
         super(ConversionRate, self).clean()
 
     def __str__(self):  # noqa
-        return '1 %s = %.04f %s' % (self.base_currency, self.rate,
-                                    self.to_currency)
+        return '1 %s = %.04f %s' % (
+            self.base_currency, self.rate, self.to_currency)
 
-    def __repr__(self):  # noqa
-        return (
-            'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)' % (
-                self.pk, self.base_currency, self.to_currency, self.rate))
+    def __repr___(self):  # noqa
+        format_template = (
+            'ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)')
+        return format_template % (
+            self.pk, self.base_currency, self.to_currency, self.rate)
