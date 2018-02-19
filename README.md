@@ -22,12 +22,13 @@ print(converted_price)
 
 The `exchange_currency` supports `Money`, `TaxedMoney`, `MoneyRange` and `TaxedMoneyRange`.
 
-Template filters can be used to convert currency and round amounts:
+Template filters can be used with `django-prices` to convert currency, round amounts and display localized amounts in templates:
 
 ```html+django
+{% load prices_i18n %}
 {% load prices_multicurrency %}
 
-<p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price|in_currency:'USD'|amount }} tax)</p>
+<p>Price: {{ foo.price.gross|in_currency:'USD'|amount }} ({{ foo.price.net|in_currency:'USD'|amount }} + {{ foo.price.tax|in_currency:'USD'|amount }} tax)</p>
 ```
 
 
