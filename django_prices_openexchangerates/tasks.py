@@ -37,7 +37,7 @@ def update_conversion_rates():
         new_exchange_rate = extract_rate(
             exchange_rates, conversion_rate.to_currency)
         conversion_rate.rate = new_exchange_rate
-        conversion_rate.save(update_fields=['rate'])
+        conversion_rate.save(update_fields=['rate', 'modified_at'])
     get_rates(ConversionRate.objects.all(), force_refresh=True)
     return conversion_rates
 
