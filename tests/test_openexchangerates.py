@@ -33,12 +33,15 @@ def conversion_rates(db):
 
 
 def test_conversionrate__str_repr(conversion_rates):
-    obj = conversion_rates[0]
+    obj = ConversionRate.objects.get(to_currency='EUR')
 
     assert str(obj) == '1 USD = 2.0000 EUR'
-    assert repr(obj) == (
-        "ConversionRate(pk=1, base_currency='USD', to_currency='EUR', "
-        "rate=Decimal('2'))")
+
+    obj_repr = repr(obj)
+    assert 'ConversionRate' in obj_repr
+    assert 'pk={},'.format(obj.pk) in obj_repr
+    assert "base_currency='USD'," in obj_repr
+    assert "to_currency='EUR'," in obj_repr
 
 
 def test_the_same_currency_uses_no_conversion():
