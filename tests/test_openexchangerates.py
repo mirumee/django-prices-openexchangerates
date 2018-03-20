@@ -32,6 +32,18 @@ def conversion_rates(db):
     return rates
 
 
+def test_conversionrate__str_repr(conversion_rates):
+    obj = ConversionRate.objects.get(to_currency='EUR')
+
+    assert str(obj) == '1 USD = 2.0000 EUR'
+
+    obj_repr = repr(obj)
+    assert 'ConversionRate' in obj_repr
+    assert 'pk={},'.format(obj.pk) in obj_repr
+    assert "base_currency='USD'," in obj_repr
+    assert "to_currency='EUR'," in obj_repr
+
+
 def test_the_same_currency_uses_no_conversion():
     value = Money(10, currency='EUR')
     converted_value = exchange_currency(value, 'EUR')
