@@ -49,7 +49,7 @@ def create_conversion_dates():
             continue
         rate = extract_rate(exchange_rates, currency)
         try:
-            conversion_rate, _ = ConversionRate.objects.get_or_create(
+            conversion_rate = _get_or_create_conversionrate(
                 to_currency=currency, rate=rate)
         except Exception:
             logger.exception(
@@ -57,3 +57,14 @@ def create_conversion_dates():
                 extra={'currency': currency, 'rate': rate})
         else:
             yield conversion_rate
+
+
+def _get_or_create_conversionrate(to_currency, rate):
+    try:
+        conversion_rate = ConversionRate.objects.get(to_currency=to_currency)
+    except ConversionRate.DoesNotExist:
+        conversion_rate = ConversionRate(to_currency=to_currency)
+
+    conversion_rate.rate = rate
+    conversion_rate.save()
+    return conversion_rate
