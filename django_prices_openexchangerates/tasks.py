@@ -42,7 +42,7 @@ def update_conversion_rates():
     return conversion_rates
 
 
-def create_conversion_dates():
+def create_conversion_rates():
     exchange_rates = get_latest_exchange_rates()
     for currency in exchange_rates:
         if currency == BASE_CURRENCY:
