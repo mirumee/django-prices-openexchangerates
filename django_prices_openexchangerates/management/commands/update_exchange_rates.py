@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from ...tasks import update_conversion_rates, create_conversion_dates
+from ...tasks import update_conversion_rates, create_conversion_rates
 
 
 class Command(BaseCommand):
@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['all_currencies']:
-            all_rates = create_conversion_dates()
+            all_rates = create_conversion_rates()
         else:
             all_rates = update_conversion_rates()
         for conversion_rate in all_rates:
