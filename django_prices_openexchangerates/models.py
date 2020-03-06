@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.core.cache import cache
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from .currencies import CURRENCIES
 
@@ -35,7 +34,6 @@ class CachingManager(models.Manager):
             raise ConversionRate.DoesNotExist(msg)
 
 
-@python_2_unicode_compatible
 class ConversionRate(models.Model):
 
     base_currency = BASE_CURRENCY
