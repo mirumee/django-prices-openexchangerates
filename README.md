@@ -1,5 +1,10 @@
 # openexchangerates.org support for `django-prices`
 
+## Django 5 Compatibility
+This fork of django-prices-openexchangerates has been updated to ensure compatibility with Django 5.
+
+Please note that while the maintainer of this fork will try to keep it updated, it is recommended to use the official package once it supports Django 5.
+
 ```python
 from prices import Money
 from django_prices_openexchangerates import exchange_currency
