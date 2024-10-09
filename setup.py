@@ -40,7 +40,7 @@ setup(
     include_package_data=True,
     classifiers=CLASSIFIERS,
     install_requires=["Django>=3.0", "django-prices @ "
-                                     "git+https://github.com/eboladuan/django-prices@django-5-support", "prices>=1.0.0"],
+                                     "git+https://github.com/ebolasudan/django-prices@django-5-support", "prices>=1.0.0"],
     platforms=["any"],
     tests_require=["mock==1.0.1", "pytest"],
     zip_safe=False,
