@@ -39,7 +39,7 @@ setup(
     ],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=["Django>=3.0", "django-prices>=1.0.0", "prices>=1.0.0"],
+    install_requires=["Django>=3.0", "django-prices>=2.3.0", "prices>=1.0.0"],
     platforms=["any"],
     tests_require=["mock==1.0.1", "pytest"],
     zip_safe=False,
