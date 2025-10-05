@@ -1,12 +1,12 @@
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .currencies import CURRENCIES
+from django_prices_openexchangerates.currencies import CURRENCIES
 
 BASE_CURRENCY = getattr(settings, "OPENEXCHANGERATES_BASE_CURRENCY", "USD")
 CACHE_KEY = getattr(
@@ -29,12 +29,11 @@ class CachingManager(models.Manager):
         try:
             return all_rates[to_currency]
         except KeyError:
-            msg = "ConversionRate for %s does not exist" % to_currency
+            msg = f"ConversionRate for {to_currency} does not exist"
             raise ConversionRate.DoesNotExist(msg)
 
 
 class ConversionRate(models.Model):
-
     base_currency = BASE_CURRENCY
 
     to_currency = models.CharField(
@@ -53,25 +52,22 @@ class ConversionRate(models.Model):
     def save(self, *args, **kwargs):  # noqa
         """Save the model instance but only on successful validation."""
         self.full_clean()
-        super(ConversionRate, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def clean(self):  # noqa
         if self.rate <= Decimal(0):
             raise ValidationError("Conversion rate has to be positive")
         if self.base_currency == self.to_currency:
             raise ValidationError("Can't set a conversion rate for the same currency")
-        super(ConversionRate, self).clean()
+        super().clean()
 
     def __str__(self):  # noqa
-        return "1 %s = %.04f %s" % (self.base_currency, self.rate, self.to_currency)
+        return f"1 {self.base_currency} = {self.rate:.04f} {self.to_currency}"
 
     def __repr__(self):  # noqa
-        format_template = (
-            "ConversionRate(pk=%r, base_currency=%r, to_currency=%r, rate=%r)"
-        )
-        return format_template % (
-            self.pk,
-            self.base_currency,
-            self.to_currency,
-            self.rate,
+        return (
+            f"ConversionRate(pk={self.pk!r}, "
+            f"base_currency={self.base_currency!r}, "
+            f"to_currency={self.to_currency!r}, "
+            f"rate={self.rate!r})"
         )

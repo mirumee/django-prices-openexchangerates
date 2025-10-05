@@ -17,7 +17,7 @@ CLASSIFIERS = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-with open("README.md", "r", encoding="utf8") as fh:
+with open("README.md", encoding="utf8") as fh:
     long_description = fh.read()
 
 setup(

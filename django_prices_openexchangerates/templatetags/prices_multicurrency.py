@@ -3,9 +3,9 @@ from typing import TypeVar
 from django.template import Library
 from prices import Money, MoneyRange, TaxedMoney, TaxedMoneyRange
 
-from .. import exchange_currency
+from django_prices_openexchangerates import exchange_currency
 
-T = TypeVar('T', Money, MoneyRange, TaxedMoney, TaxedMoneyRange)
+T = TypeVar("T", Money, MoneyRange, TaxedMoney, TaxedMoneyRange)
 
 register = Library()
 
