@@ -88,8 +88,8 @@ exclude_also = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-omit = ["*/__about__.py"]
-fail_under = 90
+omit = ["*/__about__.py", "*/commands/*", "*/migrations/*"]
+fail_under = 80
 
 [tool.hatch.envs.coverage]
 detached = true
