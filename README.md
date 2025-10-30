@@ -1,5 +1,10 @@
 # openexchangerates.org support for `django-prices`
 
+[![codecov](https://codecov.io/github/mirumee/django-prices-openexchangerates/graph/badge.svg?token=xiGnvCqIm5)](https://codecov.io/github/mirumee/django-prices-openexchangerates)
+![PyPI - Version](https://img.shields.io/pypi/v/django-prices-openexchangerates)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/django-prices-openexchangerates)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-prices-openexchangerates)
+
 ```python
 from prices import Money
 from django_prices_openexchangerates import exchange_currency
@@ -55,3 +60,9 @@ Fetch current rates from API with `./manage.py update_exchange_rates`
 Schedule this task in cron job or in celery, to be always up to date with exchange rates
 
 You can use `--all` flag in above command, to create exchange rates automatically for all available currencies.
+
+---
+
+**Crafted with ❤️ by [Mirumee Software](http://mirumee.com)**
+
+hello@mirumee.com
